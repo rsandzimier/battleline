@@ -9,7 +9,8 @@
     "boardgame.io": "^0.39.14",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "esm": "3.x"
   },
   "engines": {
     "npm": "3.x",
