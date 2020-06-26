@@ -8,7 +8,7 @@ import { BattleLineBoard } from './Board';
 const BattleLineClient = Client({
   game: BattleLine,
   board: BattleLineBoard,
-  multiplayer: SocketIO({ server: 'localhost:8000' }),
+  multiplayer: SocketIO({ server: 'https://battleline-backend.herokuapp.com/' }),
 });
 console.log(window);
 console.log(window.location);
@@ -17,8 +17,8 @@ const App = () => (
   <div>
     <BattleLineClient/>
     <Lobby
-    gameServer={'https://${window.location.hostname}:8000'}
-    lobbyServer={'https://${window.location.hostname}:8000'}
+    gameServer={'https://battleline-backend.herokuapp.com/'}
+    lobbyServer={'https://battleline-backend.herokuapp.com/'}
     // gameServer={'localhost:8000'}
     // lobbyServer={'localhost:8000'}
     gameComponents={[{game: BattleLine, board: BattleLineBoard}]}
