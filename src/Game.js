@@ -37,6 +37,7 @@ var unseen_cards = DEFAULT_TROOP_DECK.slice();
 var flag_statuses = new Array(9).fill(null);
 
 export const BattleLine = {
+  name: "battle-line",
   setup: () => ({ troop_deck: troop_deck,
                   tactics_deck: tactics_deck,
                   player_hands: player_hands,
