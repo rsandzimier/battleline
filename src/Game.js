@@ -45,7 +45,8 @@ export const BattleLine = {
                   unseen_cards: unseen_cards,
                   flag_statuses: flag_statuses
                 }),
-  
+  minPlayers: 2,
+  maxPlayers: 2,
   moves: {
     playCard: (G, ctx, card, flag) => {
       if (ctx.numMoves > 0){

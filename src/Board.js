@@ -30,13 +30,11 @@ export class BattleLineBoard extends React.Component {
   render() {
     const cardStyle = {
       border: '1px solid #555',
-      whitespace: 'pre-line',
       width: '100px',
       height: '150px',
       lineHeight: '150px',
       textAlign: 'center',
     };
-
     let tbody = [];
 
     let cells = [];
