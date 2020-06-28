@@ -56,6 +56,10 @@ export class Formation extends React.Component {
             }
             ctx.translate(0,-35*this.props.cards.length)
         }
+        if (this.props.show_flag){
+            let y_offset = this.props.side === 'top' ? 35:105;
+            drawFlag(ctx, y_offset);
+        }
         
     }
 
@@ -75,12 +79,14 @@ export class Flag extends React.Component {
     }
     updateCanvas() {    
         const ctx = this.refs.canvas.getContext('2d');
-        ctx.clearRect(0,0, 80, 100);
-        drawFlag(ctx);
+        ctx.clearRect(0,0, 80, 50);
+        if (this.props.show_flag){
+            drawFlag(ctx, 0);
+        }
     }
     render() {
          return (
-             <canvas ref="canvas" width={80} height={100}/>
+             <canvas ref="canvas" width={80} height={50}/>
          );
     }   
 }
@@ -164,7 +170,8 @@ function drawCardOutline(ctx, width, height, corner_radius, fill_color){
     ctx.stroke();
 }
 
-function drawFlag(ctx){
-    ctx.fillRect(0, 0, 10, 10);
+function drawFlag(ctx, y_offset){
+    var img = document.getElementById("flag");
+    ctx.drawImage(img, 15, y_offset, 50, 50);
 
 }

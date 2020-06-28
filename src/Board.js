@@ -33,13 +33,13 @@ export class BattleLineBoard extends React.Component {
 
     let cells = [];
     cells.push(
-        <td key ={cells.length}>
-          {this.props.ctx.currentPlayer === '0' ? 'X': ''}
+        <td key ={cells.length} style={{textAlign: 'center'}}>
+          {this.props.ctx.currentPlayer === '0' ? 'Your turn!': ''}
         </td>
     );
     for (let i = 0; i < this.props.G.player_hands[0].length; i++) {
       cells.push(
-        <td key={cells.length} style={{border: "1px solid black"}} onClick={() => this.onClickCard('0', i)}>
+        <td key={cells.length} onClick={() => this.onClickCard('0', i)}>
           <Card str={this.props.G.player_hands[0][i]}/>
         </td>
       );
@@ -47,12 +47,12 @@ export class BattleLineBoard extends React.Component {
     tbody.push(<tr key={tbody.length}>{cells}</tr>);
     cells = [];
     cells.push(
-      <td rowSpan="3" key={cells.length} style={{border: "1px solid red"}}>
+      <td rowSpan="3" key={cells.length}>
         <table id="troop_deck" style={{margin:'auto'}}>
           <tbody>
             <tr>
-              <td style={{border: "1px solid black"}} onClick={() => this.onClickDeck(0)}>
-                <Card str={this.props.G.troop_deck[0]}/>
+              <td onClick={() => this.onClickDeck(0)}>
+                <Card str={this.props.G.troop_deck.length>0 ? this.props.G.troop_deck[0]:''}/>
               </td>
             </tr>
           </tbody>
@@ -62,8 +62,8 @@ export class BattleLineBoard extends React.Component {
     for (let i = 0; i < 9; i++) {
       let str = this.props.G.board_cards[i][0].join('\n');
       cells.push(
-        <td key={cells.length} style={{border: "1px solid black"}} onClick={() => this.onClickSlot('0', i)}>
-          <Formation cards={this.props.G.board_cards[i][0]} side={'top'}/>
+        <td key={cells.length} onClick={() => this.onClickSlot('0', i)}>
+          <Formation cards={this.props.G.board_cards[i][0]} side={'top'} show_flag={this.props.G.flag_statuses[i]==='0'}/>
         </td>
       );
     }
@@ -72,8 +72,8 @@ export class BattleLineBoard extends React.Component {
 
     for (let i = 0; i < 9; i++) {
       cells.push(
-        <td key={cells.length} onClick={() => this.onClickFlag(i)} style={{height:"50px"}}>
-          <Flag flag_status={this.props.G.flag_statuses[i]}/>
+        <td key={cells.length} onClick={() => this.onClickFlag(i)}>
+          <Flag show_flag={this.props.G.flag_statuses[i]===null}/>
         </td>
       );
     }
@@ -83,21 +83,21 @@ export class BattleLineBoard extends React.Component {
     for (let i = 0; i < 9; i++) {
       let str = this.props.G.board_cards[i][1].join('\n');
       cells.push(
-        <td key={cells.length} style={{border: "1px solid black"}} onClick={() => this.onClickSlot('1',i)}>
-          <Formation cards={this.props.G.board_cards[i][1]} side={'bottom'}/>
+        <td key={cells.length} onClick={() => this.onClickSlot('1',i)}>
+          <Formation cards={this.props.G.board_cards[i][1]} side={'bottom'} show_flag={this.props.G.flag_statuses[i]==='1'}/>
         </td>
       );
     }
     tbody.push(<tr key={tbody.length}>{cells}</tr>);
     cells = [];
     cells.push(
-        <td key={cells.length}>
-          {this.props.ctx.currentPlayer === '1' ? 'X': ''}
+        <td key={cells.length} style={{textAlign: 'center'}}>
+          {this.props.ctx.currentPlayer === '1' ? 'Your turn!': ''}
         </td>
     );
     for (let i = 0; i < this.props.G.player_hands[1].length; i++) {
       cells.push(
-        <td key={cells.length} style={{border: "1px solid black"}} onClick={() => this.onClickCard('1',i)}>
+        <td key={cells.length} onClick={() => this.onClickCard('1',i)}>
           <Card str={this.props.G.player_hands[1][i]}/>
         </td>
       );
@@ -108,7 +108,6 @@ export class BattleLineBoard extends React.Component {
         <table id="board">
           <tbody>{tbody}</tbody>
         </table>
-        <img src="/flag.png"/>
       </div>
     );
   }
