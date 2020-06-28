@@ -2,9 +2,6 @@ import React from 'react';
 import { Lobby } from 'boardgame.io/react';
 
 export class BattleLineLobby extends Lobby{
-    constructor(props){
-        super(props);
-    }
     handleChangeName(event){
         this.setState({
             playerName: event.target.value,
@@ -68,35 +65,35 @@ export class BattleLineLobby extends Lobby{
         rooms_thead.push(<tr>{rooms_th}</tr>);
 
         var rooms_tbody = [];
-        for (var i = 0; i != this.connection.rooms.length; i++){
+        for (var i = 0; i !== this.connection.rooms.length; i++){
             var rooms_row = [];
             let room = this.connection.rooms[i];
             var player1_name = (room.players.length > 0) ? room.players[0].name:undefined;
             var player2_name = (room.players.length > 1) ? room.players[1].name:undefined;
 
             rooms_row.push(<td style={room_id_col_style}>{room.gameID}</td>);
-            if (player1_name != undefined){
+            if (player1_name !== undefined){
                 rooms_row.push(<td style={player_name_col_style}>{player1_name}</td>);
             }
             else{
                 rooms_row.push(<td style={player_name_col_style}><input type="button" value="Join" onClick={(event) => this.handleJoinRoom(event, room.gameID, 0)}/></td>);
             }
             rooms_row.push(<td style={vs_col_style}>{'vs.'}</td>);
-            if (player2_name != undefined){
+            if (player2_name !== undefined){
                 rooms_row.push(<td style={player_name_col_style}>{player2_name}</td>);
             }
             else{
                 rooms_row.push(<td style={player_name_col_style}><input type="button" value="Join" onClick={(event) => this.handleJoinRoom(event, room.gameID, 1)}/></td>);
             }    
 
-            if (player1_name == this.state.playerName || player2_name == this.state.playerName){
+            if (player1_name === this.state.playerName || player2_name === this.state.playerName){
                 rooms_row.push(<td style={button_col_style}><input type="button" value="Leave" onClick={(event) => this.handleLeaveRoom(event, room.gameID)}/></td>);
             }
             else{
                 rooms_row.push(<td style={button_col_style}></td>);
             }
-            if((player1_name == this.state.playerName && player2_name != undefined) || (player2_name == this.state.playerName && player1_name != undefined)){
-                var playerID = this.state.playerName == player1_name ? '0':'1';
+            if((player1_name === this.state.playerName && player2_name !== undefined) || (player2_name === this.state.playerName && player1_name !== undefined)){
+                let playerID = this.state.playerName === player1_name ? '0':'1';
                 rooms_row.push(<td style={button_col_style}><input type="button" value="Play" onClick={(event) => this.handleStartGame(event, room.gameID, playerID)}/></td>);
             }
             else{
@@ -104,14 +101,10 @@ export class BattleLineLobby extends Lobby{
             }
             rooms_tbody.push(<tr>{rooms_row}</tr>);
         }
-        // Change Name
-        // List of rooms
-        // Create room
-        // Join room
-        // Play
-        var errMsg = this.state.errorMsg != '' ? 'Error: ' + this.state.errorMsg:'';
 
-        if (this.state.phase == 'enter'){
+        // var errMsg = this.state.errorMsg !== '' ? 'Error: ' + this.state.errorMsg:'';
+
+        if (this.state.phase === 'enter'){
             return (
                 <div>
                     {'Enter name: '}
@@ -120,7 +113,7 @@ export class BattleLineLobby extends Lobby{
                 </div>
             );
         }
-        else if (this.state.phase == 'list'){
+        else if (this.state.phase === 'list'){
             return (
                 <div>
                     <input type="button" value="Exit Lobby" onClick={(event) => this.handleExitLobby(event)}/>
@@ -136,7 +129,7 @@ export class BattleLineLobby extends Lobby{
                 </div>
             );
         }
-        else if (this.state.phase == 'play'){
+        else if (this.state.phase === 'play'){
             var board_element = React.createElement(this.state.runningGame.app, {
                 gameID: this.state.runningGame.gameID,
                 playerID: this.state.runningGame.playerID,

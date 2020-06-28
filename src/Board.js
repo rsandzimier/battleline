@@ -1,4 +1,5 @@
 import React from 'react';
+import {Card, Formation, Flag} from './BoardComponents'
 
 export class BattleLineBoard extends React.Component {
   constructor(props) {
@@ -6,16 +7,16 @@ export class BattleLineBoard extends React.Component {
     this.selected_card = null;
   }
   onClickCard(player_id, card_id) {
-    if (this.props.ctx.currentPlayer != player_id){
+    if (this.props.ctx.currentPlayer !== player_id){
       return;
     }
     this.selected_card = card_id;
   }
   onClickSlot(player_id, flag_id) {
-    if (this.props.ctx.currentPlayer != player_id){
+    if (this.props.ctx.currentPlayer !== player_id){
       return;
     }
-    if (this.selected_card == null){
+    if (this.selected_card === null){
       return;
     }
     this.props.moves.playCard(this.selected_card, flag_id);
@@ -28,97 +29,86 @@ export class BattleLineBoard extends React.Component {
     this.props.moves.drawCard(deck_id); 
   }
   render() {
-    const cardStyle = {
-      border: '1px solid #555',
-      width: '100px',
-      height: '150px',
-      lineHeight: '150px',
-      textAlign: 'center',
-    };
     let tbody = [];
 
     let cells = [];
     cells.push(
-        <td style={cardStyle}>
-          {this.props.ctx.currentPlayer == 0 ? 'X': ''}
+        <td key ={cells.length}>
+          {this.props.ctx.currentPlayer === '0' ? 'X': ''}
         </td>
     );
     for (let i = 0; i < this.props.G.player_hands[0].length; i++) {
-      let id = i;
       cells.push(
-        <td style={cardStyle} key={id} onClick={() => this.onClickCard(0, i)}>
-          {this.props.G.player_hands[0][i]}
+        <td key={cells.length} style={{border: "1px solid black"}} onClick={() => this.onClickCard('0', i)}>
+          <Card str={this.props.G.player_hands[0][i]}/>
         </td>
       );
     }
-    tbody.push(<tr key={0}>{cells}</tr>);
+    tbody.push(<tr key={tbody.length}>{cells}</tr>);
     cells = [];
     cells.push(
-        <td style={cardStyle}>
-        </td>
-    );
-    for (let i = 0; i < 9; i++) {
-      let id = 10+i;
-      let str = this.props.G.board_cards[i][0].join('\n');
-      cells.push(
-        <td style={cardStyle} key={id} onClick={() => this.onClickSlot(0, i)}>
-          {str}
-        </td>
-      );
-    }
-    tbody.push(<tr key={1}>{cells}</tr>);
-    cells = [];
-    cells.push(
-      <td style={cardStyle} key={19} onClick={() => this.onClickDeck(0)}>
-        {'Troop'}
+      <td rowSpan="3" key={cells.length} style={{border: "1px solid red"}}>
+        <table id="troop_deck" style={{margin:'auto'}}>
+          <tbody>
+            <tr>
+              <td style={{border: "1px solid black"}} onClick={() => this.onClickDeck(0)}>
+                <Card str={this.props.G.troop_deck[0]}/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </td>
     );
     for (let i = 0; i < 9; i++) {
-      let id = 20+i;
+      let str = this.props.G.board_cards[i][0].join('\n');
       cells.push(
-        <td style={cardStyle} key={id} onClick={() => this.onClickFlag(i)}>
-          {this.props.G.flag_statuses[i]}
+        <td key={cells.length} style={{border: "1px solid black"}} onClick={() => this.onClickSlot('0', i)}>
+          <Formation cards={this.props.G.board_cards[i][0]} side={'top'}/>
         </td>
       );
     }
-    tbody.push(<tr key={2}>{cells}</tr>);
+    tbody.push(<tr key={tbody.length}>{cells}</tr>);
     cells = [];
-    cells.push(
-        <td style={cardStyle}>
-        </td>
-    );
+
     for (let i = 0; i < 9; i++) {
-      let id = 30+i;
+      cells.push(
+        <td key={cells.length} onClick={() => this.onClickFlag(i)} style={{height:"50px"}}>
+          <Flag flag_status={this.props.G.flag_statuses[i]}/>
+        </td>
+      );
+    }
+    tbody.push(<tr key={tbody.length}>{cells}</tr>);
+    cells = [];
+
+    for (let i = 0; i < 9; i++) {
       let str = this.props.G.board_cards[i][1].join('\n');
       cells.push(
-        <td style={cardStyle} key={id} onClick={() => this.onClickSlot(1,i)}>
-          {str}
+        <td key={cells.length} style={{border: "1px solid black"}} onClick={() => this.onClickSlot('1',i)}>
+          <Formation cards={this.props.G.board_cards[i][1]} side={'bottom'}/>
         </td>
       );
     }
-    tbody.push(<tr key={3}>{cells}</tr>);
+    tbody.push(<tr key={tbody.length}>{cells}</tr>);
     cells = [];
     cells.push(
-        <td style={cardStyle}> 
-          {this.props.ctx.currentPlayer == 1 ? 'X': ''}
+        <td key={cells.length}>
+          {this.props.ctx.currentPlayer === '1' ? 'X': ''}
         </td>
     );
     for (let i = 0; i < this.props.G.player_hands[1].length; i++) {
-      let id = 40+i;
       cells.push(
-        <td style={cardStyle} key={id} onClick={() => this.onClickCard(1,i)}>
-          {this.props.G.player_hands[1][i]}
+        <td key={cells.length} style={{border: "1px solid black"}} onClick={() => this.onClickCard('1',i)}>
+          <Card str={this.props.G.player_hands[1][i]}/>
         </td>
       );
     }
-    tbody.push(<tr key={4}>{cells}</tr>);
-
-
+    tbody.push(<tr key={tbody.length}>{cells}</tr>);
     return (
       <div>
         <table id="board">
           <tbody>{tbody}</tbody>
         </table>
+        <img src="/flag.png"/>
       </div>
     );
   }

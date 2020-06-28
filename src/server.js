@@ -7,5 +7,10 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const server = Server({ games: [BattleLine] });
-const PORT = process.env.PORT || 8000;
+// ONLINE:
+// const PORT = process.env.PORT || 8000;
+// LOCAL:
+const PORT = 8000;
+// END
+
 server.run(PORT);

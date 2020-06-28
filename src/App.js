@@ -5,22 +5,33 @@ import { BattleLine } from './Game';
 import { BattleLineBoard } from './Board';
 import { BattleLineLobby } from './Lobby';
 
-import { Lobby } from 'boardgame.io/react';
-
 const BattleLineClient = Client({
   game: BattleLine,
   board: BattleLineBoard,
-  multiplayer: SocketIO({ server: 'https://battleline-backend.herokuapp.com' }),
+  // ONLINE:
+  // multiplayer: SocketIO({ server: 'https://battleline-backend.herokuapp.com' }),
+  // LOCAL:
+  multiplayer: SocketIO({ server: 'localhost:8000' }),
+  // END
 });
 
+// ONLINE:
+// const App = () => (
+//   <div>
+//     <BattleLineLobby
+//     gameServer={'https://battleline-backend.herokuapp.com'}
+//     lobbyServer={'https://battleline-backend.herokuapp.com'}
+//     gameComponents={[{game: BattleLine, board: BattleLineBoard}]}
+//     />
+//   </div>
+// )
+
+// LOCAL:
 const App = () => (
   <div>
-    <BattleLineLobby
-    gameServer={'https://battleline-backend.herokuapp.com'}
-    lobbyServer={'https://battleline-backend.herokuapp.com'}
-    gameComponents={[{game: BattleLine, board: BattleLineBoard}]}
-    />
+    <BattleLineClient/>
   </div>
 )
+// END
 
 export default App;
