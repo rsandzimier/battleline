@@ -11,7 +11,7 @@ export class Header extends React.Component {
                         </td>
                         <td style={{textAlign:"right"}}>
                             <a href="https://github.com/rsandzimier/battleline">
-                                <img id="github" src="https://pngimg.com/uploads/github/github_PNG58.png" style={{height:"50px"}} />
+                                <img id="github" src="https://raw.githubusercontent.com/rsandzimier/battleline/master/github_logo.png" style={{height:"50px"}} />
                             </a>
                         </td>
                     </tr>
