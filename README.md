@@ -1,7 +1,7 @@
 # Battle Line
 Online version of [Battle Line](https://rsandzimier.github.io/battleline/).
 
-Using:
+Developed using:
 - React
 - Boardgame.io
 
