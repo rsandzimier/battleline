@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/battleline/static/css/main.5ecd60fb.chunk.css",
-    "main.js": "/battleline/static/js/main.557def39.chunk.js",
-    "main.js.map": "/battleline/static/js/main.557def39.chunk.js.map",
+    "main.js": "/battleline/static/js/main.93f400ce.chunk.js",
+    "main.js.map": "/battleline/static/js/main.93f400ce.chunk.js.map",
     "runtime-main.js": "/battleline/static/js/runtime-main.0a2e9051.js",
     "runtime-main.js.map": "/battleline/static/js/runtime-main.0a2e9051.js.map",
-    "static/js/2.ce9f7ac4.chunk.js": "/battleline/static/js/2.ce9f7ac4.chunk.js",
-    "static/js/2.ce9f7ac4.chunk.js.map": "/battleline/static/js/2.ce9f7ac4.chunk.js.map",
+    "static/js/2.fb4155f3.chunk.js": "/battleline/static/js/2.fb4155f3.chunk.js",
+    "static/js/2.fb4155f3.chunk.js.map": "/battleline/static/js/2.fb4155f3.chunk.js.map",
     "index.html": "/battleline/index.html",
-    "precache-manifest.482a5256940cd3a5213a322ca68c804e.js": "/battleline/precache-manifest.482a5256940cd3a5213a322ca68c804e.js",
+    "precache-manifest.62f63f9c79b42231e0be01af01100e7b.js": "/battleline/precache-manifest.62f63f9c79b42231e0be01af01100e7b.js",
     "service-worker.js": "/battleline/service-worker.js",
     "static/css/main.5ecd60fb.chunk.css.map": "/battleline/static/css/main.5ecd60fb.chunk.css.map",
-    "static/js/2.ce9f7ac4.chunk.js.LICENSE.txt": "/battleline/static/js/2.ce9f7ac4.chunk.js.LICENSE.txt"
+    "static/js/2.fb4155f3.chunk.js.LICENSE.txt": "/battleline/static/js/2.fb4155f3.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.0a2e9051.js",
-    "static/js/2.ce9f7ac4.chunk.js",
+    "static/js/2.fb4155f3.chunk.js",
     "static/css/main.5ecd60fb.chunk.css",
-    "static/js/main.557def39.chunk.js"
+    "static/js/main.93f400ce.chunk.js"
   ]
 }
