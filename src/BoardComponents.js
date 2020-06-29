@@ -15,18 +15,21 @@ export class Card extends React.Component {
     }
     updateCanvas() {    
         const ctx = this.refs.canvas.getContext('2d');
-        ctx.clearRect(0,0, 80, 120);
+        ctx.clearRect(0,0, 80, 150);
+        let translate = (this.props.side === 'top' && this.props.selected) ||  (this.props.side === 'bottom' && !this.props.selected) ? 0:30;
+        ctx.translate(0,translate);
         if (this.props.str.length == 2){
             drawTroopCardFront(ctx, this.props.str);
         }
         else if (this.props.str == 'troop'){
             drawTroopCardBack(ctx);
         }
+        ctx.translate(0,-translate);
     }
 
     render() {
          return (
-             <canvas ref="canvas" width={80} height={120}/>
+             <canvas ref="canvas" width={80} height={150}/>
          );
     }
 }

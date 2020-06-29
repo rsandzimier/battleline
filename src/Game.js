@@ -64,30 +64,37 @@ export const BattleLine = {
       }
       G.player_hands[ctx.currentPlayer].splice(card, 1);
     },
-    claimFlag: (G, ctx, flag) => {
-      if (ctx.numMoves === 0){
-        return INVALID_MOVE;
-      }
-      if (G.flag_statuses[flag] !== null){
-        return INVALID_MOVE;
-      }
-      var formations = getFormations(flag, ctx.currentPlayer, G.board_cards);
-      if (!isStrongestFormation(formations[0], formations[1], G.unseen_cards)){
-        return INVALID_MOVE;
-      }
-      G.flag_statuses[flag] = ctx.currentPlayer;
+    claimFlag: {
+      move: (G, ctx, flag) => {
+        if (G.flag_statuses[flag] !== null){
+          return INVALID_MOVE;
+        }
+        var formations = getFormations(flag, ctx.currentPlayer, G.board_cards);
+        if (!isStrongestFormation(formations[0], formations[1], G.unseen_cards)){
+          return INVALID_MOVE;
+        }
+        G.flag_statuses[flag] = ctx.currentPlayer;
+      },
+      noLimit: true
     },
     drawCard: {
       move: (G, ctx, deck) => {
         if (ctx.numMoves === 0){
           return INVALID_MOVE;
         }
-        if (G.troop_deck.length > 0){
-          G.player_hands[ctx.currentPlayer].push(G.troop_deck.pop());
+        if (G.troop_deck.length == 0){
+          return INVALID_MOVE;
         }
+        G.player_hands[ctx.currentPlayer].push(G.troop_deck.pop());
         ctx.events.endTurn();
       },
       client: false
+    },
+    passTurn: (G, ctx) => {
+      if (!canPassTurn(G, ctx)){
+        return INVALID_MOVE
+      }
+      ctx.events.endTurn();
     }
   },
   playerView: (G, ctx, playerID) => {return stripSecrets(G, playerID)},
@@ -400,3 +407,32 @@ function stripSecrets(G, playerID){
                     flag_statuses: G.flag_statuses};
   return G_stripped;
 }
+
+function canPlayTroopCard(board_cards, player_id, flag_statuses, hand){
+  let have_troop_card = false;
+  for (let i = 0; i !== hand.length && !have_troop_card; i++){
+    if (hand[i].length === 2){
+      have_troop_card = true;
+    }
+  }
+  if (!have_troop_card){
+    return false;
+  }
+  for (let i = 0; i !== 9; i++){
+    if (board_cards[i][player_id].length !== 3 && flag_statuses[i] === null){
+      return true;
+    }
+  }
+  return false;
+}
+
+function canPassTurn(G, ctx){
+  if (ctx.numMoves === 0){
+    return !canPlayTroopCard(G.board_cards, ctx.currentPlayer, G.flag_statuses, G.player_hands[ctx.currentPlayer]); 
+  }
+  else{
+    return G.troop_deck.length === 0;
+  }
+}
+
+export default canPassTurn;
