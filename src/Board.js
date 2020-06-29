@@ -129,7 +129,7 @@ export class BattleLineBoard extends React.Component {
     tbody.push(<tr key={tbody.length}>{cells}</tr>);
     return (
       <div>
-        <table id="board">
+        <table id="board" style={{margin:"auto"}}>
           <tbody>{tbody}</tbody>
         </table>
       </div>

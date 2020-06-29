@@ -4,6 +4,7 @@ import { SocketIO } from 'boardgame.io/multiplayer';
 import { BattleLine } from './Game';
 import { BattleLineBoard } from './Board';
 import { BattleLineLobby } from './Lobby';
+import { Header } from './Header';
 
 const BattleLineClient = Client({
   game: BattleLine,
@@ -18,6 +19,7 @@ const BattleLineClient = Client({
 // ONLINE:
 const App = () => (
   <div>
+    <Header/>
     <BattleLineLobby
     gameServer={'https://battleline-backend.herokuapp.com'}
     lobbyServer={'https://battleline-backend.herokuapp.com'}
@@ -29,6 +31,7 @@ const App = () => (
 // LOCAL:
 // const App = () => (
 //   <div>
+//     <Header/>
 //     <BattleLineClient/>
 //   </div>
 // )

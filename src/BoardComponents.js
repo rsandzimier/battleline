@@ -1,9 +1,5 @@
 import React from 'react';
 
-// function rect(props) {
-//     const {ctx, x, y, width, height} = props;
-//     ctx.fillRect(x, y, width, height);
-// }
 var COLOR_MAP = new Map([["r","#FF0000"],["o","#FFA500"],["y","#FFFF00"],["g","#008000"],["b","#0000FF"],["p","#800080"]]);
 
 export class Card extends React.Component {
