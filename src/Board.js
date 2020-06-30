@@ -11,7 +11,7 @@ export class BattleLineBoard extends React.Component {
     if (this.props.ctx.currentPlayer !== player_id){
       return;
     }
-    if (this.selected_card != card_id){
+    if (this.selected_card !== card_id){
       this.selected_card = card_id;
       this.forceUpdate();
     }
@@ -48,7 +48,7 @@ export class BattleLineBoard extends React.Component {
     for (let i = 0; i < this.props.G.player_hands[0].length; i++) {
       cells.push(
         <td key={cells.length} onClick={() => this.onClickCard('0', i)}>
-          <Card str={this.props.G.player_hands[0][i]} side={'top'} selected={i===this.selected_card && this.props.ctx.currentPlayer=='0'}/>
+          <Card str={this.props.G.player_hands[0][i]} side={'top'} selected={i===this.selected_card && this.props.ctx.currentPlayer==='0' && this.props.playerID==='0' && this.props.ctx.numMoves===0}/>
         </td>
       );
     }
@@ -56,7 +56,7 @@ export class BattleLineBoard extends React.Component {
     cells = [];
     let pass_display = new Array(2).fill('none');
     for (let i = 0; i !== 2; i++){
-      if (this.props.ctx.currentPlayer == this.props.playerID && this.props.ctx.currentPlayer === i.toString() && canPassTurn(this.props.G, this.props.ctx)){
+      if (this.props.ctx.currentPlayer === this.props.playerID && this.props.ctx.currentPlayer === i.toString() && canPassTurn(this.props.G, this.props.ctx)){
         pass_display[i] = 'block';
       }
     }
@@ -84,7 +84,6 @@ export class BattleLineBoard extends React.Component {
       </td>
     );
     for (let i = 0; i < 9; i++) {
-      let str = this.props.G.board_cards[i][0].join('\n');
       cells.push(
         <td key={cells.length} onClick={() => this.onClickSlot('0', i)}>
           <Formation cards={this.props.G.board_cards[i][0]} side={'top'} show_flag={this.props.G.flag_statuses[i]==='0'}/>
@@ -105,7 +104,6 @@ export class BattleLineBoard extends React.Component {
     cells = [];
 
     for (let i = 0; i < 9; i++) {
-      let str = this.props.G.board_cards[i][1].join('\n');
       cells.push(
         <td key={cells.length} onClick={() => this.onClickSlot('1',i)}>
           <Formation cards={this.props.G.board_cards[i][1]} side={'bottom'} show_flag={this.props.G.flag_statuses[i]==='1'}/>
@@ -122,7 +120,7 @@ export class BattleLineBoard extends React.Component {
     for (let i = 0; i < this.props.G.player_hands[1].length; i++) {
       cells.push(
         <td key={cells.length} onClick={() => this.onClickCard('1',i)}>
-          <Card str={this.props.G.player_hands[1][i]} side={'bottom'} selected={i===this.selected_card && this.props.ctx.currentPlayer=='1'}/>
+          <Card str={this.props.G.player_hands[1][i]} side={'bottom'} selected={i===this.selected_card && this.props.ctx.currentPlayer==='1' && this.props.playerID==='1' && this.props.ctx.numMoves===0}/>
         </td>
       );
     }

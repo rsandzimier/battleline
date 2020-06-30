@@ -82,7 +82,7 @@ export const BattleLine = {
         if (ctx.numMoves === 0){
           return INVALID_MOVE;
         }
-        if (G.troop_deck.length == 0){
+        if (G.troop_deck.length === 0){
           return INVALID_MOVE;
         }
         G.player_hands[ctx.currentPlayer].push(G.troop_deck.pop());

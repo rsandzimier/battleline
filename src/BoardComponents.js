@@ -3,6 +3,10 @@ import React from 'react';
 var COLOR_MAP = new Map([["r","#FF0000"],["o","#FFA500"],["y","#FFFF00"],["g","#008000"],["b","#0000FF"],["p","#800080"]]);
 
 export class Card extends React.Component {
+    constructor(props) {
+        super(props);
+        this.cardRefs = React.createRef();
+    }
     componentDidMount() {
         this.updateCanvas();
     }
@@ -10,14 +14,14 @@ export class Card extends React.Component {
         this.updateCanvas();
     }
     updateCanvas() {    
-        const ctx = this.refs.canvas.getContext('2d');
+        const ctx = this.cardRefs.current.getContext('2d');
         ctx.clearRect(0,0, 80, 150);
         let translate = (this.props.side === 'top' && this.props.selected) ||  (this.props.side === 'bottom' && !this.props.selected) ? 0:30;
         ctx.translate(0,translate);
-        if (this.props.str.length == 2){
+        if (this.props.str.length === 2){
             drawTroopCardFront(ctx, this.props.str);
         }
-        else if (this.props.str == 'troop'){
+        else if (this.props.str === 'troop'){
             drawTroopCardBack(ctx);
         }
         ctx.translate(0,-translate);
@@ -25,12 +29,16 @@ export class Card extends React.Component {
 
     render() {
          return (
-             <canvas ref="canvas" width={80} height={150}/>
+             <canvas ref={this.cardRefs} width={80} height={150}/>
          );
     }
 }
 
 export class Formation extends React.Component {
+    constructor(props) {
+        super(props);
+        this.formationRefs = React.createRef();
+    }
     componentDidMount() {
         this.updateCanvas();
     }
@@ -38,18 +46,18 @@ export class Formation extends React.Component {
         this.updateCanvas();
     }
     updateCanvas() {    
-        const ctx = this.refs.canvas.getContext('2d');
+        const ctx = this.formationRefs.current.getContext('2d');
         ctx.clearRect(0,0, 80, 190);
         if (this.props.side === 'top'){
             ctx.translate(0,70);
-            for (let i = 0; i != this.props.cards.length; i++){
+            for (let i = 0; i !== this.props.cards.length; i++){
                 drawTroopCardFront(ctx, this.props.cards[i]);
                 ctx.translate(0,-35);
             }
             ctx.translate(0,-35*(2-this.props.cards.length))
         }
         else{
-            for (let i = 0; i != this.props.cards.length; i++){
+            for (let i = 0; i !== this.props.cards.length; i++){
                 drawTroopCardFront(ctx, this.props.cards[i]);
                 ctx.translate(0,35);
             }
@@ -64,12 +72,16 @@ export class Formation extends React.Component {
 
     render() {
          return (
-             <canvas ref="canvas" width={80} height={190}/>
+             <canvas ref={this.formationRefs} width={80} height={190}/>
          );
     }   
 }
 
 export class Flag extends React.Component {
+    constructor(props) {
+        super(props);
+        this.flagRefs = React.createRef();
+    }
     componentDidMount() {
         this.updateCanvas();
     }
@@ -77,7 +89,7 @@ export class Flag extends React.Component {
         this.updateCanvas();
     }
     updateCanvas() {    
-        const ctx = this.refs.canvas.getContext('2d');
+        const ctx = this.flagRefs.current.getContext('2d');
         ctx.clearRect(0,0, 80, 50);
         if (this.props.show_flag){
             drawFlag(ctx, 0);
@@ -85,7 +97,7 @@ export class Flag extends React.Component {
     }
     render() {
          return (
-             <canvas ref="canvas" width={80} height={50}/>
+             <canvas ref={this.flagRefs} width={80} height={50}/>
          );
     }   
 }
@@ -109,7 +121,7 @@ function drawTroopCardFront(ctx, card_str){
     ctx.fillStyle = "#000000";
     ctx.textAlign = "center";
     let lineHeight = ctx.measureText('M').width;
-    for (let i = 0; i != 2; i++){
+    for (let i = 0; i !== 2; i++){
         if (val !== 'T'){
             ctx.fillText(val, padding + inset_width/2, padding + inset_height/2 + lineHeight/2 - 2); 
         }
