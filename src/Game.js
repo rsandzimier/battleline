@@ -18,16 +18,6 @@ var troop_deck = DEFAULT_TROOP_DECK.slice();
 var DEFAULT_TACTICS_DECK = ["ALX","DAR","CAV","321","TRA","DES","RDP","SCT","FOG","MUD"];
 var tactics_deck = DEFAULT_TACTICS_DECK.slice();
 
-var player_hands = [];
-player_hands.push([]);
-player_hands.push([]);
-
-for(let i = 0; i !== 7; i++){
-  for(let j = 0; j !== 2; j++){
-    player_hands[j].push(troop_deck.pop()); 
-  }
-}
-
 var board_cards = new Array(9).fill(new Array(2).fill([]))
 var unseen_cards = DEFAULT_TROOP_DECK.slice();
 var seen_cards = [];
@@ -36,14 +26,26 @@ var flag_statuses = new Array(9).fill(null);
 
 export const BattleLine = {
   name: "battle-line",
-  setup: () => ({ troop_deck: shuffle_array(troop_deck),
-                  tactics_deck: shuffle_array(tactics_deck),
+  setup: () => {
+                shuffle_array(troop_deck);
+                shuffle_array(tactics_deck);
+                let player_hands = [];
+                player_hands.push([]);
+                player_hands.push([]);
+                for(let i = 0; i !== 7; i++){
+                  for(let j = 0; j !== 2; j++){
+                    player_hands[j].push(troop_deck.pop()); 
+                  }
+                }
+
+                return { troop_deck: troop_deck,
+                  tactics_deck: tactics_deck,
                   player_hands: player_hands,
                   board_cards: board_cards,
                   unseen_cards: unseen_cards,
                   seen_cards: seen_cards,
                   flag_statuses: flag_statuses
-                }),
+                }},
   minPlayers: 2,
   maxPlayers: 2,
   moves: {
