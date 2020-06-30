@@ -138,8 +138,6 @@ export class BattleLineLobby extends Lobby{
             return (
                 <div>
                     {board_element}
-                    <br></br>
-                    <input type="button" value="Exit Game" onClick={(event) => this.handleExitRoom(event)}/>
                 </div>
             );
         }

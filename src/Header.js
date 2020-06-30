@@ -2,13 +2,15 @@ import React from 'react';
 
 export class Header extends React.Component {
     render() {
-         return (
+        return (
             <div>
                 <table style={{width:"100%"}} bgcolor="#E4DB86">
                     <tbody>
                         <tr>
                             <td style={{fontFamily:"Verdana", fontSize:"30px",padding:"10px"}}>
-                                BATTLE LINE
+                                <a href="https://rsandzimier.github.io/battleline/" style={{color:"inherit", textDecoration:"none"}}>
+                                    BATTLE LINE
+                                </a>
                             </td>
                             <td style={{textAlign:"right"}}>
                                 <a href="https://github.com/rsandzimier/battleline">
@@ -19,6 +21,6 @@ export class Header extends React.Component {
                     </tbody>
                 </table><br></br>
             </div>
-         );
+        );
     }
 }
