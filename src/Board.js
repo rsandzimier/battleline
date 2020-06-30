@@ -8,11 +8,15 @@ export class BattleLineBoard extends React.Component {
     this.selected_card = null;
   }
   onClickCard(player_id, card_id) {
-    if (this.props.ctx.currentPlayer !== player_id){
+    if (this.props.ctx.currentPlayer !== player_id || this.props.ctx.currentPlayer != this.props.playerID){
       return;
     }
     if (this.selected_card !== card_id){
       this.selected_card = card_id;
+      this.forceUpdate();
+    }
+    else{
+      this.selected_card = null;
       this.forceUpdate();
     }
 
