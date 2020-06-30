@@ -381,6 +381,7 @@ function shuffle_array(arr){
     arr[k] = arr[i];
     arr[i] = temp;
   }
+  return arr;
 }
 
 function stripSecrets(G, playerID){
