@@ -44,9 +44,16 @@ export class BattleLineBoard extends React.Component {
     let tbody = [];
 
     let cells = [];
+    let text_display = '';
+    if (this.props.ctx.gameover !== undefined && this.props.ctx.gameover.winner === '0'){
+      text_display = 'Winner!'
+    }
+    else if (this.props.ctx.currentPlayer === '0'){
+      text_display = 'Your turn!'
+    }
     cells.push(
         <td key ={cells.length} style={{textAlign: 'center'}}>
-          {this.props.ctx.currentPlayer === '0' ? 'Your turn!': ''}
+          {text_display}
         </td>
     );
     for (let i = 0; i < this.props.G.player_hands[0].length; i++) {
@@ -116,6 +123,13 @@ export class BattleLineBoard extends React.Component {
     }
     tbody.push(<tr key={tbody.length}>{cells}</tr>);
     cells = [];
+    text_display = '';
+    if (this.props.ctx.gameover !== undefined && this.props.ctx.gameover.winner === '1'){
+      text_display = 'Winner!'
+    }
+    else if (this.props.ctx.currentPlayer === '1'){
+      text_display = 'Your turn!'
+    }
     cells.push(
         <td key={cells.length} style={{textAlign: 'center'}}>
           {this.props.ctx.currentPlayer === '1' ? 'Your turn!': ''}
