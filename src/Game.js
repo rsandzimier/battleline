@@ -32,6 +32,7 @@ for(let i = 0; i !== 7; i++){
 
 var board_cards = new Array(9).fill(new Array(2).fill([]))
 var unseen_cards = DEFAULT_TROOP_DECK.slice();
+var seen_cards = [];
 
 var flag_statuses = new Array(9).fill(null);
 
@@ -42,6 +43,7 @@ export const BattleLine = {
                   player_hands: player_hands,
                   board_cards: board_cards,
                   unseen_cards: unseen_cards,
+                  seen_cards: seen_cards,
                   flag_statuses: flag_statuses
                 }),
   minPlayers: 2,
@@ -58,6 +60,7 @@ export const BattleLine = {
         return INVALID_MOVE;
       }
       G.board_cards[flag][ctx.currentPlayer].push(G.player_hands[ctx.currentPlayer][card]);
+      G.seen_cards.push(G.player_hands[ctx.currentPlayer][card]);
       var ind = G.unseen_cards.indexOf(G.player_hands[ctx.currentPlayer][card]);
       if (ind !== -1){
         G.unseen_cards.splice(ind,1);
@@ -404,6 +407,7 @@ function stripSecrets(G, playerID){
                     player_hands: player_hands_stripped,
                     board_cards: G.board_cards,
                     unseen_cards: G.unseen_cards,
+                    seen_cards: G.seen_cards,
                     flag_statuses: G.flag_statuses};
   return G_stripped;
 }

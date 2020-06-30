@@ -8,7 +8,7 @@ export class BattleLineBoard extends React.Component {
     this.selected_card = null;
   }
   onClickCard(player_id, card_id) {
-    if (this.props.ctx.currentPlayer !== player_id || this.props.ctx.currentPlayer != this.props.playerID){
+    if (this.props.ctx.currentPlayer !== player_id || this.props.ctx.currentPlayer !== this.props.playerID){
       return;
     }
     if (this.selected_card !== card_id){
@@ -95,9 +95,12 @@ export class BattleLineBoard extends React.Component {
       </td>
     );
     for (let i = 0; i < 9; i++) {
+      let cards = this.props.G.board_cards[i][0];
+      let show_flag = this.props.G.flag_statuses[i]==='0';
+      let highlight = cards.length > 0 && cards.slice(-1)[0] === this.props.G.seen_cards.slice(-1)[0] && this.props.playerID !== '0';
       cells.push(
         <td key={cells.length} onClick={() => this.onClickSlot('0', i)}>
-          <Formation cards={this.props.G.board_cards[i][0]} side={'top'} show_flag={this.props.G.flag_statuses[i]==='0'}/>
+          <Formation cards={cards} side={'top'} show_flag={show_flag} highlight={highlight}/>
         </td>
       );
     }
@@ -115,9 +118,12 @@ export class BattleLineBoard extends React.Component {
     cells = [];
 
     for (let i = 0; i < 9; i++) {
+      let cards = this.props.G.board_cards[i][1];
+      let show_flag = this.props.G.flag_statuses[i]==='1';
+      let highlight = cards.length > 0 && cards.slice(-1)[0] === this.props.G.seen_cards.slice(-1)[0] && this.props.playerID !== '1';
       cells.push(
         <td key={cells.length} onClick={() => this.onClickSlot('1',i)}>
-          <Formation cards={this.props.G.board_cards[i][1]} side={'bottom'} show_flag={this.props.G.flag_statuses[i]==='1'}/>
+          <Formation cards={cards} side={'bottom'} show_flag={show_flag} highlight={highlight}/>
         </td>
       );
     }

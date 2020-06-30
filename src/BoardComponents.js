@@ -19,7 +19,7 @@ export class Card extends React.Component {
         let translate = (this.props.side === 'top' && this.props.selected) ||  (this.props.side === 'bottom' && !this.props.selected) ? 0:30;
         ctx.translate(0,translate);
         if (this.props.str.length === 2){
-            drawTroopCardFront(ctx, this.props.str);
+            drawTroopCardFront(ctx, this.props.str, false);
         }
         else if (this.props.str === 'troop'){
             drawTroopCardBack(ctx);
@@ -51,14 +51,14 @@ export class Formation extends React.Component {
         if (this.props.side === 'top'){
             ctx.translate(0,70);
             for (let i = 0; i !== this.props.cards.length; i++){
-                drawTroopCardFront(ctx, this.props.cards[i]);
+                drawTroopCardFront(ctx, this.props.cards[i], this.props.highlight && i === this.props.cards.length-1);
                 ctx.translate(0,-35);
             }
             ctx.translate(0,-35*(2-this.props.cards.length))
         }
         else{
             for (let i = 0; i !== this.props.cards.length; i++){
-                drawTroopCardFront(ctx, this.props.cards[i]);
+                drawTroopCardFront(ctx, this.props.cards[i], this.props.highlight && i === this.props.cards.length-1);
                 ctx.translate(0,35);
             }
             ctx.translate(0,-35*this.props.cards.length)
@@ -102,7 +102,7 @@ export class Flag extends React.Component {
     }   
 }
 
-function drawTroopCardFront(ctx, card_str){
+function drawTroopCardFront(ctx, card_str, highlight){
     let card_width = 80;
     let card_height = 120;
     let padding = 7;
@@ -111,7 +111,8 @@ function drawTroopCardFront(ctx, card_str){
     let val = card_str[0];
     let color = card_str[1];
 
-    drawCardOutline(ctx, card_width, card_height, 7, "#FFFFFF");
+    let border_color = highlight ? "#000000":"#FFFFFF";
+    drawCardOutline(ctx, card_width, card_height, 7, border_color);
     ctx.fillStyle = COLOR_MAP.get(color);
     ctx.fillRect(padding, padding, card_width-2*padding, card_height-2*padding);
     ctx.fillStyle = "#FFFFFF";
