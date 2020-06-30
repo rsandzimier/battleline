@@ -14,11 +14,9 @@ for(let i = 0; i !== 10; i++){
 }
 
 var troop_deck = DEFAULT_TROOP_DECK.slice();
-shuffle_array(troop_deck);
 
 var DEFAULT_TACTICS_DECK = ["ALX","DAR","CAV","321","TRA","DES","RDP","SCT","FOG","MUD"];
 var tactics_deck = DEFAULT_TACTICS_DECK.slice();
-shuffle_array(tactics_deck);
 
 var player_hands = [];
 player_hands.push([]);
@@ -38,8 +36,8 @@ var flag_statuses = new Array(9).fill(null);
 
 export const BattleLine = {
   name: "battle-line",
-  setup: () => ({ troop_deck: troop_deck,
-                  tactics_deck: tactics_deck,
+  setup: () => ({ troop_deck: shuffle_array(troop_deck),
+                  tactics_deck: shuffle_array(tactics_deck),
                   player_hands: player_hands,
                   board_cards: board_cards,
                   unseen_cards: unseen_cards,
