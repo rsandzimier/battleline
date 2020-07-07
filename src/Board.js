@@ -34,8 +34,8 @@ export class BattleLineBoard extends React.Component {
   onClickFlag(flag_id){
     this.props.moves.claimFlag(flag_id); 
   }
-  onClickDeck(deck_id){
-    this.props.moves.drawCard(deck_id); 
+  onClickDeck(deck_name){
+    this.props.moves.drawCard(deck_name); 
   }
   onClickPass(){
     this.props.moves.passTurn();
@@ -81,7 +81,7 @@ export class BattleLineBoard extends React.Component {
               </td>
             </tr>
             <tr>
-              <td onClick={() => this.onClickDeck(0)}>
+              <td onClick={() => this.onClickDeck('troop')}>
                 <Card str={this.props.G.troop_deck.length>0 ? this.props.G.troop_deck[0]:''}/>
               </td>
             </tr>
@@ -104,6 +104,19 @@ export class BattleLineBoard extends React.Component {
         </td>
       );
     }
+    cells.push(
+      <td rowSpan="3" key={cells.length}>
+        <table id="tactics_deck" style={{margin:'auto'}}>
+          <tbody>
+            <tr>
+              <td onClick={() => this.onClickDeck('tactics')}>
+                <Card str={this.props.G.tactics_deck.length>0 ? this.props.G.tactics_deck[0]:''}/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    );
     tbody.push(<tr key={tbody.length}>{cells}</tr>);
     cells = [];
 

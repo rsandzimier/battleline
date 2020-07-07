@@ -1,6 +1,8 @@
 import React from 'react';
 
 var COLOR_MAP = new Map([["r","#FF0000"],["o","#FFA500"],["y","#FFFF00"],["g","#008000"],["b","#0000FF"],["p","#800080"]]);
+var TACTICS_FORMAT_MAP = new Map([["ALX",[["ALEXANDER"],6]],["DAR",[["DARIUS"],9]],["CAV",[["COMPANION","CAVALRY"],6]],["321",[["SHIELD","BEARERS"],8]],["TRA",[["TRAITOR"],9]],["DES",[["DESERTER"],7]],["RDP",[["REDEPLOY"],7]],["SCT",[["SCOUT"],9]],["FOG",[["FOG"],9]],["MUD",[["MUD"],9]]]);
+
 
 export class Card extends React.Component {
     constructor(props) {
@@ -21,8 +23,14 @@ export class Card extends React.Component {
         if (this.props.str.length === 2){
             drawTroopCardFront(ctx, this.props.str, false);
         }
+        else if (this.props.str.length === 3){
+            drawTacticsCardFront(ctx, this.props.str, false);
+        }
         else if (this.props.str === 'troop'){
             drawTroopCardBack(ctx);
+        }
+        else if (this.props.str === 'tactics'){
+            drawTacticsCardBack(ctx);
         }
         ctx.translate(0,-translate);
     }
@@ -47,18 +55,28 @@ export class Formation extends React.Component {
     }
     updateCanvas() {    
         const ctx = this.formationRefs.current.getContext('2d');
-        ctx.clearRect(0,0, 80, 190);
+        ctx.clearRect(0,0, 80, 295);
         if (this.props.side === 'top'){
-            ctx.translate(0,70);
+            ctx.translate(0,175);
             for (let i = 0; i !== this.props.cards.length; i++){
-                drawTroopCardFront(ctx, this.props.cards[i], this.props.highlight && i === this.props.cards.length-1);
+                if (this.props.cards[i].length === 2){
+                    drawTroopCardFront(ctx, this.props.cards[i], this.props.highlight && i === this.props.cards.length-1);
+                }
+                else if (this.props.cards[i].length === 3){
+                    drawTacticsCardFront(ctx, this.props.cards[i], this.props.highlight && i === this.props.cards.length-1);
+                }
                 ctx.translate(0,-35);
             }
-            ctx.translate(0,-35*(2-this.props.cards.length))
+            ctx.translate(0,-35*(5-this.props.cards.length))
         }
         else{
             for (let i = 0; i !== this.props.cards.length; i++){
-                drawTroopCardFront(ctx, this.props.cards[i], this.props.highlight && i === this.props.cards.length-1);
+                if (this.props.cards[i].length === 2){
+                    drawTroopCardFront(ctx, this.props.cards[i], this.props.highlight && i === this.props.cards.length-1);
+                }
+                else if (this.props.cards[i].length === 3){
+                    drawTacticsCardFront(ctx, this.props.cards[i], this.props.highlight && i === this.props.cards.length-1);
+                }
                 ctx.translate(0,35);
             }
             ctx.translate(0,-35*this.props.cards.length)
@@ -72,7 +90,7 @@ export class Formation extends React.Component {
 
     render() {
          return (
-             <canvas ref={this.formationRefs} width={80} height={190}/>
+             <canvas ref={this.formationRefs} width={80} height={295}/>
          );
     }   
 }
@@ -156,10 +174,61 @@ function drawTroopCardBack(ctx){
     ctx.fillStyle = "#D2B48C";
     ctx.fillRect(padding, padding, card_width-2*padding, card_height-2*padding);
 
-    ctx.font = "16px Verdana";
+    ctx.font = "14px Verdana";
     ctx.fillStyle = "#000000";
     ctx.textAlign = "center";
     ctx.fillText('TROOP', card_width/2, card_height/2)
+}
+
+function drawTacticsCardFront(ctx, card_str, highlight){
+    let card_width = 80;
+    let card_height = 120;
+    let padding = 7;
+    let inset_width = 20;
+    let inset_height = 25;
+    let val = card_str[0];
+    let color = card_str[1];
+
+    let border_color = highlight ? "#000000":"#FFFFFF";
+    drawCardOutline(ctx, card_width, card_height, 7, border_color);
+    ctx.fillStyle = "#E4DB86";
+    ctx.fillRect(padding, padding, card_width-2*padding, card_height-2*padding);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(padding, padding, inset_width, inset_height);
+    ctx.fillRect(card_width-padding-inset_width, card_height-padding-inset_height, inset_width, inset_height);
+    let format = TACTICS_FORMAT_MAP.get(card_str);
+    let text = format[0];
+    let font_size = format[1];
+    ctx.font = font_size.toString() + "px Verdana";
+    ctx.fillStyle = "#000000";
+    ctx.textAlign = "center";
+    let lineHeight = ctx.measureText('M').width;
+    for (let i = 0; i != 2; i++){
+        for (let j = 0; j != text.length; j++){
+            ctx.fillText(text[j], (card_width + inset_width)/2, (35+padding+lineHeight*text.length)/2 - lineHeight*(text.length - 1 - j));
+        }
+        ctx.rotate(Math.PI);
+        ctx.translate(-card_width, -card_height);
+    }
+    if (format.length === 3){
+        console.log(format[2]);
+        format[2]();
+    }
+}
+
+function drawTacticsCardBack(ctx){
+    let card_width = 80;
+    let card_height = 120;
+    let padding = 7;
+
+    drawCardOutline(ctx, card_width, card_height, 7, "#855040");
+    ctx.fillStyle = "#D2B48C";
+    ctx.fillRect(padding, padding, card_width-2*padding, card_height-2*padding);
+
+    ctx.font = "14px Verdana";
+    ctx.fillStyle = "#000000";
+    ctx.textAlign = "center";
+    ctx.fillText('TACTICS', card_width/2, card_height/2)
 }
 
 function drawCardOutline(ctx, width, height, corner_radius, fill_color){
@@ -185,5 +254,8 @@ function drawCardOutline(ctx, width, height, corner_radius, fill_color){
 function drawFlag(ctx, y_offset){
     var img = document.getElementById("flag");
     ctx.drawImage(img, 15, y_offset, 50, 50);
-
 }
+
+// function drawLeaderIcon(ctx, x, y, width, height){
+//     console.log("Draw leader icon");
+// }
