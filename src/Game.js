@@ -54,18 +54,19 @@ export const BattleLine = {
   maxPlayers: 2,
   moves: {
     playCard: (G, ctx, card, flag) => {
+      console.log(G);
       if (ctx.numMoves > 0){
         return INVALID_MOVE;
       }
       if (flagHasMud(G.board_cards[flag])){
         if (G.board_cards[flag][ctx.currentPlayer].length === 3){
           return INVALID_MOVE;
-        
-
         }
       } 
       else{
-
+        if (G.board_cards[flag][ctx.currentPlayer].length === 3){
+          return INVALID_MOVE;
+        }
       }
       if (G.flag_statuses[flag] !== null){
         return INVALID_MOVE;
@@ -474,6 +475,7 @@ function shuffle_array(arr){
 }
 
 function stripSecrets(G, playerID){
+  return G;
   var troop_deck_stripped = new Array(G.troop_deck.length).fill("troop");
   var tactics_deck_stripped = new Array(G.tactics_deck.length).fill("tactics");
   var player_hands_stripped = [];
