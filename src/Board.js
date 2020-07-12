@@ -151,7 +151,7 @@ export class BattleLineBoard extends React.Component {
     }
     cells.push(
         <td key={cells.length} style={{textAlign: 'center'}}>
-          {this.props.ctx.currentPlayer === '1' ? 'Your turn!': ''}
+          {text_display}
         </td>
     );
     for (let i = 0; i < this.props.G.player_hands[1].length; i++) {

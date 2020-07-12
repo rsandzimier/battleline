@@ -17,7 +17,7 @@ for(let i = 0; i !== 10; i++){
 
 var troop_deck = DEFAULT_TROOP_DECK.slice();
 
-var DEFAULT_TACTICS_DECK = ["ALX","DAR","CAV","321","TRA","DES","RDP","SCT"];//,"FOG","MUD"];
+var DEFAULT_TACTICS_DECK = ["ALX","DAR","CAV","321","TRA","DES","RDP","SCT","FOG","MUD"];
 var tactics_deck = DEFAULT_TACTICS_DECK.slice();
 
 var board_cards = new Array(9).fill(new Array(2).fill([]))
@@ -54,24 +54,26 @@ export const BattleLine = {
   maxPlayers: 2,
   moves: {
     playCard: (G, ctx, card, flag) => {
-      console.log(G);
       if (ctx.numMoves > 0){
         return INVALID_MOVE;
       }
-      if (flagHasMud(G.board_cards[flag])){
-        if (G.board_cards[flag][ctx.currentPlayer].length === 3){
-          return INVALID_MOVE;
+      if (isTroopCard(G.player_hands[ctx.currentPlayer][card]) || isMoraleTacticsCard(G.player_hands[ctx.currentPlayer][card])){
+        if (flagHasMud(G.board_cards[flag])){
+          if (countFormationCards(G.board_cards[flag][ctx.currentPlayer]) === 4){
+            return INVALID_MOVE;
+          }
         }
-      } 
-      else{
-        if (G.board_cards[flag][ctx.currentPlayer].length === 3){
-          return INVALID_MOVE;
+        else{
+          if (countFormationCards(G.board_cards[flag][ctx.currentPlayer]) === 3){
+            return INVALID_MOVE;
+          }
         }
       }
+      
       if (G.flag_statuses[flag] !== null){
         return INVALID_MOVE;
       }
-      if (G.player_hands[ctx.currentPlayer][card].length === 3){
+      if (isTacticsCard(G.player_hands[ctx.currentPlayer][card])){
         if (ctx.currentPlayer === '0' && G.tactics_played[0] > G.tactics_played[1]){
           return INVALID_MOVE;
         }
@@ -82,12 +84,12 @@ export const BattleLine = {
       if (isLeaderTacticsCard(G.player_hands[ctx.currentPlayer][card]) && G.leaders_played[ctx.currentPlayer] > 0){
         return INVALID_MOVE;
       }
-      if (["TRA","DES","RDP","SCT","FOG","MUD"].indexOf(G.player_hands[ctx.currentPlayer][card]) >= 0){
+      if (["TRA","DES","RDP","SCT"].indexOf(G.player_hands[ctx.currentPlayer][card]) >= 0){
         return INVALID_MOVE;
       }
       G.board_cards[flag][ctx.currentPlayer].push(G.player_hands[ctx.currentPlayer][card]);
       G.seen_cards.push(G.player_hands[ctx.currentPlayer][card]);
-      if (G.player_hands[ctx.currentPlayer][card].length === 3){
+      if (isTacticsCard(G.player_hands[ctx.currentPlayer][card])){
         G.tactics_played[ctx.currentPlayer]++;
       }
       if (isLeaderTacticsCard(G.player_hands[ctx.currentPlayer][card])){
@@ -104,8 +106,10 @@ export const BattleLine = {
         if (G.flag_statuses[flag] !== null){
           return INVALID_MOVE;
         }
+        let has_fog = flagHasFog(G.board_cards[flag]);
+        let has_mud = flagHasMud(G.board_cards[flag]);
         var formations = getFormations(flag, ctx.currentPlayer, G.board_cards);
-        if (!isStrongestFormation(formations[0], formations[1], G.unseen_cards)){
+        if (!isStrongestFormation(formations[0], formations[1], G.unseen_cards, has_fog, has_mud)){
           return INVALID_MOVE;
         }
         G.flag_statuses[flag] = ctx.currentPlayer;
@@ -178,20 +182,23 @@ function getFormations(flag, player_id, board_cards){
   for(let i = 0; i !== 2; i++){
     for(let j = 0; j !== board_cards[flag][i].length; j++){
       if(i === parseInt(player_id)){
-        formation.push(board_cards[flag][i][j]);
+        if (isFormationCard(board_cards[flag][i][j])){
+          formation.push(board_cards[flag][i][j]);
+        }
       }
       else {
-        formation_opp.push(board_cards[flag][i][j]);
+        if (isFormationCard(board_cards[flag][i][j])){
+          formation_opp.push(board_cards[flag][i][j]);
+        }
       }
     }
   }
   return [formation, formation_opp];
 }
 
-function isStrongestFormation(formation, formation_opp, unseen_cards){
-  var formation_strength = formationStrength(formation);
-  var formation_strength_opp = potentialFormationStrength(formation_opp, unseen_cards);
-
+function isStrongestFormation(formation, formation_opp, unseen_cards, has_fog, has_mud){
+  var formation_strength = formationStrength(formation, has_fog, has_mud);
+  var formation_strength_opp = potentialFormationStrength(formation_opp, unseen_cards, has_fog, has_mud);
   return formationStrengthComparison(formation_strength, formation_strength_opp);
 }
 
@@ -210,15 +217,19 @@ function formationStrengthComparison(formation_strength1, formation_strength2){
   }
 }
 
-function formationStrength(formation){
-  if (formation.length !== 3){
+function formationStrength(formation, has_fog, has_mud){
+  let required_cards = has_mud ? 4:3;
+  if (!has_mud && formation.length !== required_cards){
     return ['incomplete', 0];
+  }
+  var sum_value = sumValue(formation);
+  if (has_fog){
+    return ['sum', sum_value];
   }
 
   var flush_value = flushValue(formation);
-  var straight_value = straightValue(formation);
+  var straight_value = straightValue(formation, has_mud);
   var set_value = setValue(formation);
-  var sum_value = sumValue(formation);
 
   if (flush_value !== -1 && straight_value !== -1){
     return ['straightflush', straight_value];
@@ -256,15 +267,15 @@ function flushValue(formation){
   }
   return val;
 }
-function straightValue(formation){
+function straightValue(formation, has_mud){
   for (let i = 0; i !== formation.length; i++){
-    if (formation[i].length !== 2){
+    if (!isTroopCard(formation[i])){
       let vals = TACTICS_VALUE_MAP.get(formation[i]);
       let str_orig = formation[i];
       let highest_value = -1;
       for (let j = 0; j !== vals.length; j++){
         formation[i] = VALUE_MAP_REVERSE.get(vals[j]) + 'x';
-        let val = straightValue(formation);
+        let val = straightValue(formation, has_mud);
         if (val > highest_value){
           highest_value = val;
         }
@@ -273,10 +284,10 @@ function straightValue(formation){
       return highest_value;
     }
   }
-  return straightValueAux(formation);
+  return straightValueAux(formation, has_mud);
 }
 
-function straightValueAux(formation){
+function straightValueAux(formation, has_mud){
   let highest = 0;
   for (let i = 0; i !== formation.length; i++){
     if (VALUE_MAP.get(formation[i][0]) > highest){
@@ -284,7 +295,8 @@ function straightValueAux(formation){
     }
     for (let j = i+1; j !== formation.length; j++){
       var diff = Math.abs(VALUE_MAP.get(formation[i][0]) - VALUE_MAP.get(formation[j][0]));
-      if (diff === 0 || diff >= 3){
+      let max_diff = has_mud ? 3:2;
+      if (diff === 0 || diff > max_diff){
         return -1;
       }  
     }
@@ -295,7 +307,7 @@ function straightValueAux(formation){
 function setValue(formation){
   var values = new Set([1,2,3,4,5,6,7,8,9,10]);
   for (let i = 0; i !== formation.length; i++){
-    if (isTroopCard(formation[i].length)){
+    if (isTroopCard(formation[i])){
       values = setIntersection(values, new Set([VALUE_MAP.get(formation[i][0])]));
     }
     else{
@@ -325,41 +337,45 @@ function sumValue(formation){
   return sum;
 }
 
-function potentialFormationStrength(formation, unseen_cards){
-  let pot = potentialStraightFlush(formation, unseen_cards);
-  if (pot !== -1){
-    return ['straightflush', pot];
+function potentialFormationStrength(formation, unseen_cards, has_fog, has_mud){
+  let pot = -1;
+  if (!has_fog){
+    pot = potentialStraightFlush(formation, unseen_cards, has_mud);
+    if (pot !== -1){
+      return ['straightflush', pot];
+    }
+    pot = potentialSet(formation, unseen_cards, has_mud);
+    if (pot !== -1){
+      return ['set', pot];
+    }
+    pot = potentialFlush(formation, unseen_cards, has_mud);
+    if (pot !== -1){
+      return ['flush', pot];
+    }
+    pot = potentialStraight(formation, unseen_cards, has_mud);
+    if (pot !== -1){
+      return ['straight', pot];
+    }
   }
-  pot = potentialSet(formation, unseen_cards);
-  if (pot !== -1){
-    return ['set', pot];
-  }
-  pot = potentialFlush(formation, unseen_cards);
-  if (pot !== -1){
-    return ['flush', pot];
-  }
-  pot = potentialStraight(formation, unseen_cards);
-  if (pot !== -1){
-    return ['straight', pot];
-  }
-  pot = potentialSum(formation, unseen_cards);
+  pot = potentialSum(formation, unseen_cards, has_mud);
   if (pot !== -1){
     return ['sum', pot];
   }
   return ['incomplete', pot];
 }
 
-function potentialStraightFlush(formation, unseen_cards, ind = null){
+function potentialStraightFlush(formation, unseen_cards, has_mud, ind = null){
   if (ind === null){
     ind = unseen_cards.length;
   }
   let flush_value = flushValue(formation);
-  let straight_value = straightValue(formation);
+  let straight_value = straightValue(formation, has_mud);
 
   if (flush_value === -1 || straight_value === -1){
     return -1;
   }
-  if (formation.length === 3){
+  let required_cards = has_mud ? 4:3;
+  if (formation.length === required_cards){
     return straight_value;
   }
   for(let i = ind - 1; i >= 0; i--){
@@ -374,16 +390,18 @@ function potentialStraightFlush(formation, unseen_cards, ind = null){
   }
   return -1;
 }
-function potentialSet(formation, unseen_cards, ind = null){
+function potentialSet(formation, unseen_cards, has_mud, ind = null){
   if (ind === null){
     ind = unseen_cards.length;
   }
   let set_value = setValue(formation);
+
   if (set_value === -1){
     return -1;
   }
-  if (formation.length === 3){
-    return set_value;
+  let required_cards = has_mud ? 4:3;
+  if (formation.length === required_cards){
+      return set_value;
   }
   for(let i = ind - 1; i >= 0; i--){
     var formation_new = formation.slice();
@@ -397,7 +415,7 @@ function potentialSet(formation, unseen_cards, ind = null){
   }
   return -1;
 }
-function potentialFlush(formation, unseen_cards, ind = null){
+function potentialFlush(formation, unseen_cards, has_mud, ind = null){
   if (ind === null){
     ind = unseen_cards.length;
   }
@@ -405,8 +423,9 @@ function potentialFlush(formation, unseen_cards, ind = null){
   if (flush_value === -1){
     return -1;
   }
-  if (formation.length === 3){
-    return flush_value;
+  let required_cards = has_mud ? 4:3;
+  if (formation.length === required_cards){
+      return flush_value;
   }
   for(let i = ind - 1; i >= 0; i--){
     var formation_new = formation.slice();
@@ -420,16 +439,17 @@ function potentialFlush(formation, unseen_cards, ind = null){
   }
   return -1;
 }
-function potentialStraight(formation, unseen_cards, ind = null){
+function potentialStraight(formation, unseen_cards, has_mud, ind = null){
   if (ind === null){
     ind = unseen_cards.length;
   }
-  let straight_value = straightValue(formation);
+  let straight_value = straightValue(formation, has_mud);
   if (straight_value === -1){
     return -1;
   }
-  if (formation.length === 3){
-    return straight_value;
+  let required_cards = has_mud ? 4:3;
+  if (formation.length === required_cards){
+      return straight_value;
   }
   for(let i = ind - 1; i >= 0; i--){
     var formation_new = formation.slice();
@@ -443,13 +463,14 @@ function potentialStraight(formation, unseen_cards, ind = null){
   }
   return -1;
 }
-function potentialSum(formation, unseen_cards, ind = null){
+function potentialSum(formation, unseen_cards, has_mud, ind = null){
   if (ind === null){
     ind = unseen_cards.length;
   }
   let sum_value = sumValue(formation);
-  if (formation.length === 3){
-    return sum_value;
+  let required_cards = has_mud ? 4:3;
+  if (formation.length === required_cards){
+      return sum_value;
   }
   for(let i = ind - 1; i >= 0; i--){
     var formation_new = formation.slice();
@@ -475,7 +496,6 @@ function shuffle_array(arr){
 }
 
 function stripSecrets(G, playerID){
-  return G;
   var troop_deck_stripped = new Array(G.troop_deck.length).fill("troop");
   var tactics_deck_stripped = new Array(G.tactics_deck.length).fill("tactics");
   var player_hands_stripped = [];
@@ -532,12 +552,15 @@ function canPassTurn(G, ctx){
     return !canPlayTroopCard(G.board_cards, ctx.currentPlayer, G.flag_statuses, G.player_hands[ctx.currentPlayer]); 
   }
   else{
-    return G.troop_deck.length === 0;
+    return G.troop_deck.length === 0 && G.tactics_deck.length;
   }
 }
 
 function isTroopCard(card){
   return card.length === 2;
+}
+function isTacticsCard(card){
+  return card.length === 3;
 }
 
 function isMoraleTacticsCard(card){
@@ -546,6 +569,10 @@ function isMoraleTacticsCard(card){
 
 function isLeaderTacticsCard(card){
   return ["ALX","DAR"].indexOf(card) >= 0;
+}
+
+function isEnvironmentalTacticsCard(card){
+  return ["FOG","MUD"].indexOf(card) >= 0;
 }
 
 function isFormationCard(card){
@@ -562,6 +589,17 @@ function countFormationCards(formation){
   return count;
 }
 
+function flagHasFog(formations){
+  for (let i = 0; i != 2; i++){
+    for (let j = 0; j != formations[i].length; j++){
+      if (formations[i][j] === "FOG"){
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 function flagHasMud(formations){
   for (let i = 0; i != 2; i++){
     for (let j = 0; j != formations[i].length; j++){
@@ -573,14 +611,4 @@ function flagHasMud(formations){
   return false;
 }
 
-function flagHasFog(formations){
-  for (let i = 0; i != 2; i++){
-    for (let j = 0; j != formations[i].length; j++){
-      if (formations[i][j] === "FOG"){
-        return true;
-      }
-    }
-  }
-  return false;
-}
 export default canPassTurn;

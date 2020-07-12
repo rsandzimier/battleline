@@ -82,7 +82,7 @@ export class Formation extends React.Component {
             ctx.translate(0,-35*this.props.cards.length)
         }
         if (this.props.show_flag){
-            let y_offset = this.props.side === 'top' ? 35:105;
+            let y_offset = this.props.side === 'top' ? 35*(7-this.props.cards.length):35*this.props.cards.length;
             drawFlag(ctx, y_offset);
         }
         
@@ -199,14 +199,17 @@ function drawTacticsCardFront(ctx, card_str, highlight){
     let format = TACTICS_FORMAT_MAP.get(card_str);
     let text = format[0];
     let font_size = format[1];
-    ctx.font = font_size.toString() + "px Verdana";
-    ctx.fillStyle = "#000000";
-    ctx.textAlign = "center";
-    let lineHeight = ctx.measureText('M').width;
+    drawIcon(card_str, ctx, card_width/2, card_height/2, 40, 40);
+
     for (let i = 0; i != 2; i++){
+        ctx.font = font_size.toString() + "px Verdana";
+        ctx.fillStyle = "#000000";
+        ctx.textAlign = "center";
+        let lineHeight = ctx.measureText('M').width;
         for (let j = 0; j != text.length; j++){
             ctx.fillText(text[j], (card_width + inset_width)/2, (35+padding+lineHeight*text.length)/2 - lineHeight*(text.length - 1 - j));
         }
+        drawIcon(card_str, ctx, padding + inset_width/2, padding + inset_height/2 - 2, 18, 18);
         ctx.rotate(Math.PI);
         ctx.translate(-card_width, -card_height);
     }
@@ -228,7 +231,7 @@ function drawTacticsCardBack(ctx){
     ctx.font = "14px Verdana";
     ctx.fillStyle = "#000000";
     ctx.textAlign = "center";
-    ctx.fillText('TACTICS', card_width/2, card_height/2)
+    ctx.fillText('TACTICS', card_width/2, card_height/2);
 }
 
 function drawCardOutline(ctx, width, height, corner_radius, fill_color){
@@ -256,6 +259,207 @@ function drawFlag(ctx, y_offset){
     ctx.drawImage(img, 15, y_offset, 50, 50);
 }
 
-// function drawLeaderIcon(ctx, x, y, width, height){
-//     console.log("Draw leader icon");
-// }
+function drawIcon(card_str, ctx, x, y, width, height) {
+    if (card_str === "ALX" || card_str === "DAR"){
+        drawLeaderIcon(ctx, x, y, width, height);
+    }
+    else if (card_str === "CAV"){
+        drawCompanionCavalryIcon(ctx, x, y, height);
+    }
+    else if (card_str === "321"){
+        drawShieldBearersIcon(ctx, x, y, width, height);
+    }
+    else if (card_str === "TRA"){
+        drawTraitorIcon(ctx, x, y, width, height);
+    }
+    else if (card_str === "DES"){
+        drawDeserterIcon(ctx, x, y, width, height);
+    }
+    else if (card_str === "RDP"){
+        drawRedeployIcon(ctx, x, y, width, height);
+    }
+    else if (card_str === "SCT"){
+        drawScoutIcon(ctx, x, y, width, height);
+    }
+    else if (card_str === "MUD"){
+        drawMudIcon(ctx, x, y, height);
+    }
+    else if (card_str === "FOG"){
+        drawFogIcon(ctx, x, y, height);
+    }
+}
+
+function drawLeaderIcon(ctx, x, y, width, height){
+    ctx.strokeStyle = "#000000";
+    ctx.fillStyle = "#000000";
+    let lineWidth = 1;
+    ctx.lineWidth = lineWidth;
+    width = 0.9*width-4;
+    height = 0.9*height;
+    let b1 = [x-width/3,y+height/2];
+    let b2 = [x+width/3,y+height/2];
+    let p1 = [x-width/2,y-height/2+2];
+    let p2 = [x,y-height/2+2];
+    let p3 = [x+width/2,y-height/2+2];
+    let v1 = [x-width/6,y];
+    let v2 = [x+width/6,y];
+    ctx.beginPath();
+    ctx.moveTo(b1[0], b1[1]);
+    ctx.lineTo(p1[0], p1[1]);
+    ctx.lineTo(v1[0], v1[1]);
+    ctx.lineTo(p2[0], p2[1]);
+    ctx.lineTo(v2[0], v2[1]);
+    ctx.lineTo(p3[0], p3[1]);
+    ctx.lineTo(b2[0], b2[1]);
+    ctx.lineTo(b1[0], b1[1]);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+}
+
+function drawCompanionCavalryIcon(ctx, x, y, height){
+    ctx.font = height.toString()+"px Verdana";
+    ctx.fillStyle = "#000000";
+    ctx.textAlign = "center";
+    let lineHeight = ctx.measureText('M').width;
+    let text = "8";
+    let text_width = ctx.measureText(text).width;
+    let offset = height < 30 ? 0:7;
+    ctx.fillText(text, x, y + lineHeight/2 - offset);
+}
+
+function drawShieldBearersIcon(ctx, x, y, width, height){
+    ctx.font = (height/2).toString()+"px Verdana";
+    ctx.fillStyle = "#000000";
+    ctx.textAlign = "center";
+    let lineHeight = ctx.measureText('M').width;
+    let text = "321";
+    let text_width = ctx.measureText(text).width;
+    let offset = height < 30 ? 0:7;
+    ctx.fillText(text, x, y + lineHeight/2 - offset);
+}
+
+function drawTraitorIcon(ctx, x, y, width, height){
+    ctx.strokeStyle = "#000000";
+    ctx.fillStyle = "#000000";
+    let lineWidth = 1;
+    ctx.lineWidth = lineWidth;
+    width = 0.4*width-4;
+    height = 0.9*height;
+    let p1 = [x-0.2*width,y-height/2+2];
+    let p2 = [x+0.2*width,y-height/2+2];
+    let p3 = [x+0.2*width,y+height/2-width];
+    let p4 = [x+width,y+height/2-width];
+    let p5 = [x,y+height/2];
+    let p6 = [x-width,y+height/2-width];
+    let p7 = [x-0.2*width,y+height/2-width];
+    ctx.beginPath();
+    ctx.moveTo(p1[0], p1[1]);
+    ctx.lineTo(p2[0], p2[1]);
+    ctx.lineTo(p3[0], p3[1]);
+    ctx.lineTo(p4[0], p4[1]);
+    ctx.lineTo(p5[0], p5[1]);
+    ctx.lineTo(p6[0], p6[1]);
+    ctx.lineTo(p7[0], p7[1]);
+    ctx.fill();
+    ctx.stroke();
+}
+
+function drawDeserterIcon(ctx, x, y, width, height){
+    ctx.strokeStyle = "#000000";
+
+    width = 0.7*width-4;
+    height = 0.9*height;
+    let lineWidth = height/5;
+    ctx.lineWidth = lineWidth;
+    let p1 = [x-width/2,y-height/2+2];
+    let p2 = [x+width/2,y-height/2+2];
+    let p3 = [x-width/2,y+height/2];
+    let p4 = [x+width/2,y+height/2];
+
+    ctx.beginPath();
+    ctx.moveTo(p1[0], p1[1]);
+    ctx.lineTo(p4[0], p4[1]);
+    ctx.moveTo(p2[0], p2[1]);
+    ctx.lineTo(p3[0], p3[1]);
+    ctx.stroke();
+}
+
+function drawRedeployIcon(ctx, x, y, width, height){
+    ctx.strokeStyle = "#000000";
+    ctx.fillStyle = "#000000";
+    let lineWidth = 1;
+    ctx.lineWidth = lineWidth;
+    height = 0.4*height-4;
+    width = 0.9*width-4;
+    let p1 = [x-width/2,y-0.2*height];
+    let p2 = [x-width/2,y+0.2*height];
+    let p3 = [x+width/2-height,y+0.2*height];
+    let p4 = [x+width/2-height,y+height];
+    let p5 = [x+width/2,y];
+    let p6 = [x+width/2-height,y-height];
+    let p7 = [x+width/2-height,y-0.2*height];
+    ctx.beginPath();
+    ctx.moveTo(p1[0], p1[1]);
+    ctx.lineTo(p2[0], p2[1]);
+    ctx.lineTo(p3[0], p3[1]);
+    ctx.lineTo(p4[0], p4[1]);
+    ctx.lineTo(p5[0], p5[1]);
+    ctx.lineTo(p6[0], p6[1]);
+    ctx.lineTo(p7[0], p7[1]);
+    ctx.fill();
+    ctx.stroke();
+}
+
+function drawScoutIcon(ctx, x, y, width, height){
+    ctx.strokeStyle = "#000000";
+    ctx.fillStyle = "#000000";
+
+    width = 0.9*width-4;
+    height = width*0.5;
+    let lineWidth = 1;
+    ctx.lineWidth = lineWidth;
+
+    let k = (Math.pow(height/2,2)-Math.pow(width/2,2))/height;
+    let r = Math.sqrt(Math.pow(width/2,2)+Math.pow(k,2));
+    let alpha = Math.atan(k*2/width);
+
+    ctx.beginPath();
+    ctx.moveTo(x+width/2,y);
+    ctx.arc(x, y-k, r, alpha, Math.PI-alpha, true);
+    ctx.arc(x, y+k, r, Math.PI+alpha,-alpha, true);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(x+height*0.2, y);
+    ctx.arc(x, y, height*0.2, 0, 2 * Math.PI, false);
+    ctx.stroke();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(x+height*0.5,y);
+    ctx.arc(x, y, height*0.5, 0, 2 * Math.PI, false);
+    ctx.stroke();
+}
+
+function drawFogIcon(ctx, x, y, height){
+    ctx.font = height.toString()+"px Verdana";
+    ctx.fillStyle = "#000000";
+    ctx.textAlign = "center";
+    let lineHeight = ctx.measureText('M').width;
+    let text = "#";
+    let text_width = ctx.measureText(text).width;
+    let offset = height < 30 ? 0:7;
+    ctx.fillText(text, x, y + lineHeight/2 - offset);
+}
+
+function drawMudIcon(ctx, x, y, height){
+    ctx.font = height.toString()+"px Verdana";
+    ctx.fillStyle = "#000000";
+    ctx.textAlign = "center";
+    let lineHeight = ctx.measureText('M').width;
+    let text = "+";
+    let text_width = ctx.measureText(text).width;
+    let offset = height < 30 ? 0:7;
+    ctx.fillText(text, x, y + lineHeight/2 - offset);
+}
