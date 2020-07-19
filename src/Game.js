@@ -10,26 +10,23 @@ var FORMATION_STRENGTH_MAP = new Map([["straightflush",5],["set",4],["flush",3],
 
 for(let i = 0; i !== 10; i++){
   for(let j = 0; j !== 6; j++){
-    var card = TROOP_DECK_VALUES[i]+TROOP_DECK_COLORS[j];
+    let card = TROOP_DECK_VALUES[i]+TROOP_DECK_COLORS[j];
     DEFAULT_TROOP_DECK.push(card);
   }
 }
-
-var troop_deck = DEFAULT_TROOP_DECK.slice();
-
 var DEFAULT_TACTICS_DECK = ["ALX","DAR","CAV","321","TRA","DES","RDP","SCT","FOG","MUD"];
-var tactics_deck = DEFAULT_TACTICS_DECK.slice();
-
-var board_cards = new Array(9).fill(new Array(2).fill([]))
-var discards = new Array(2).fill([])
-var unseen_cards = DEFAULT_TROOP_DECK.slice();
-var seen_cards = [];
-
-var flag_statuses = new Array(9).fill(null);
 
 export const BattleLine = {
   name: "battle-line",
   setup: () => {
+                let troop_deck = DEFAULT_TROOP_DECK.slice();
+                let tactics_deck = DEFAULT_TACTICS_DECK.slice();
+                let unseen_cards = DEFAULT_TROOP_DECK.slice();
+                let board_cards = new Array(9).fill(new Array(2).fill([]))
+                let discards = new Array(2).fill([])
+                let seen_cards = [];
+
+                let flag_statuses = new Array(9).fill(null);
                 shuffle_array(troop_deck);
                 shuffle_array(tactics_deck);
                 let player_hands = [];
@@ -262,7 +259,7 @@ function formationStrengthComparison(formation_strength1, formation_strength2){
 
 function formationStrength(formation, has_fog, has_mud){
   let required_cards = has_mud ? 4:3;
-  if (!has_mud && formation.length !== required_cards){
+  if (formation.length !== required_cards){
     return ['incomplete', 0];
   }
   var sum_value = sumValue(formation);
