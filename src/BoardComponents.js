@@ -8,6 +8,7 @@ export class Card extends React.Component {
     constructor(props) {
         super(props);
         this.cardRefs = React.createRef();
+        this.height = this.props.side === 'deck' ? 120:150;
     }
     componentDidMount() {
         this.updateCanvas();
@@ -17,14 +18,14 @@ export class Card extends React.Component {
     }
     updateCanvas() {    
         const ctx = this.cardRefs.current.getContext('2d');
-        ctx.clearRect(0,0, 80, 150);
-        let translate = (this.props.side === 'top' && this.props.selected) ||  (this.props.side === 'bottom' && !this.props.selected) ? 0:30;
+        ctx.clearRect(0,0, 80, this.height);
+        let translate = (this.props.side === 'top' && this.props.selected) ||  (this.props.side === 'bottom' && !this.props.selected) || this.props.side === 'deck' ? 0:30;
         ctx.translate(0,translate);
         if (this.props.str.length === 2){
-            drawTroopCardFront(ctx, this.props.str, false);
+            drawTroopCardFront(ctx, this.props.str, null);
         }
         else if (this.props.str.length === 3){
-            drawTacticsCardFront(ctx, this.props.str, false);
+            drawTacticsCardFront(ctx, this.props.str, null);
         }
         else if (this.props.str === 'troop'){
             drawTroopCardBack(ctx);
@@ -37,7 +38,7 @@ export class Card extends React.Component {
 
     render() {
          return (
-             <canvas ref={this.cardRefs} width={80} height={150}/>
+             <canvas ref={this.cardRefs} width={80} height={this.height}/>
          );
     }
 }
@@ -60,10 +61,10 @@ export class Formation extends React.Component {
             ctx.translate(0,175);
             for (let i = 0; i !== this.props.cards.length; i++){
                 if (this.props.cards[i].length === 2){
-                    drawTroopCardFront(ctx, this.props.cards[i], this.props.highlight && i === this.props.cards.length-1);
+                    drawTroopCardFront(ctx, this.props.cards[i], this.props.highlights[i]);
                 }
                 else if (this.props.cards[i].length === 3){
-                    drawTacticsCardFront(ctx, this.props.cards[i], this.props.highlight && i === this.props.cards.length-1);
+                    drawTacticsCardFront(ctx, this.props.cards[i], this.props.highlights[i]);
                 }
                 ctx.translate(0,-35);
             }
@@ -72,10 +73,10 @@ export class Formation extends React.Component {
         else{
             for (let i = 0; i !== this.props.cards.length; i++){
                 if (this.props.cards[i].length === 2){
-                    drawTroopCardFront(ctx, this.props.cards[i], this.props.highlight && i === this.props.cards.length-1);
+                    drawTroopCardFront(ctx, this.props.cards[i], this.props.highlights[i]);
                 }
                 else if (this.props.cards[i].length === 3){
-                    drawTacticsCardFront(ctx, this.props.cards[i], this.props.highlight && i === this.props.cards.length-1);
+                    drawTacticsCardFront(ctx, this.props.cards[i], this.props.highlights[i]);
                 }
                 ctx.translate(0,35);
             }
@@ -129,8 +130,10 @@ function drawTroopCardFront(ctx, card_str, highlight){
     let val = card_str[0];
     let color = card_str[1];
 
-    let border_color = highlight ? "#000000":"#FFFFFF";
-    drawCardOutline(ctx, card_width, card_height, 7, border_color);
+    if (highlight === null){
+        highlight = "#FFFFFF";
+    }
+    drawCardOutline(ctx, card_width, card_height, 7, highlight);
     ctx.fillStyle = COLOR_MAP.get(color);
     ctx.fillRect(padding, padding, card_width-2*padding, card_height-2*padding);
     ctx.fillStyle = "#FFFFFF";
@@ -186,11 +189,11 @@ function drawTacticsCardFront(ctx, card_str, highlight){
     let padding = 7;
     let inset_width = 20;
     let inset_height = 25;
-    let val = card_str[0];
-    let color = card_str[1];
 
-    let border_color = highlight ? "#000000":"#FFFFFF";
-    drawCardOutline(ctx, card_width, card_height, 7, border_color);
+    if (highlight === null){
+        highlight = "#FFFFFF";
+    }
+    drawCardOutline(ctx, card_width, card_height, 7, highlight);
     ctx.fillStyle = "#E4DB86";
     ctx.fillRect(padding, padding, card_width-2*padding, card_height-2*padding);
     ctx.fillStyle = "#FFFFFF";
@@ -201,12 +204,12 @@ function drawTacticsCardFront(ctx, card_str, highlight){
     let font_size = format[1];
     drawIcon(card_str, ctx, card_width/2, card_height/2, 40, 40);
 
-    for (let i = 0; i != 2; i++){
+    for (let i = 0; i !== 2; i++){
         ctx.font = font_size.toString() + "px Verdana";
         ctx.fillStyle = "#000000";
         ctx.textAlign = "center";
         let lineHeight = ctx.measureText('M').width;
-        for (let j = 0; j != text.length; j++){
+        for (let j = 0; j !== text.length; j++){
             ctx.fillText(text[j], (card_width + inset_width)/2, (35+padding+lineHeight*text.length)/2 - lineHeight*(text.length - 1 - j));
         }
         drawIcon(card_str, ctx, padding + inset_width/2, padding + inset_height/2 - 2, 18, 18);
@@ -323,7 +326,6 @@ function drawCompanionCavalryIcon(ctx, x, y, height){
     ctx.textAlign = "center";
     let lineHeight = ctx.measureText('M').width;
     let text = "8";
-    let text_width = ctx.measureText(text).width;
     let offset = height < 30 ? 0:7;
     ctx.fillText(text, x, y + lineHeight/2 - offset);
 }
@@ -334,7 +336,6 @@ function drawShieldBearersIcon(ctx, x, y, width, height){
     ctx.textAlign = "center";
     let lineHeight = ctx.measureText('M').width;
     let text = "321";
-    let text_width = ctx.measureText(text).width;
     let offset = height < 30 ? 0:7;
     ctx.fillText(text, x, y + lineHeight/2 - offset);
 }
@@ -448,7 +449,6 @@ function drawFogIcon(ctx, x, y, height){
     ctx.textAlign = "center";
     let lineHeight = ctx.measureText('M').width;
     let text = "#";
-    let text_width = ctx.measureText(text).width;
     let offset = height < 30 ? 0:7;
     ctx.fillText(text, x, y + lineHeight/2 - offset);
 }
@@ -459,7 +459,6 @@ function drawMudIcon(ctx, x, y, height){
     ctx.textAlign = "center";
     let lineHeight = ctx.measureText('M').width;
     let text = "+";
-    let text_width = ctx.measureText(text).width;
     let offset = height < 30 ? 0:7;
     ctx.fillText(text, x, y + lineHeight/2 - offset);
 }

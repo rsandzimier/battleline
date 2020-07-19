@@ -21,6 +21,7 @@ var DEFAULT_TACTICS_DECK = ["ALX","DAR","CAV","321","TRA","DES","RDP","SCT","FOG
 var tactics_deck = DEFAULT_TACTICS_DECK.slice();
 
 var board_cards = new Array(9).fill(new Array(2).fill([]))
+var discards = new Array(2).fill([])
 var unseen_cards = DEFAULT_TROOP_DECK.slice();
 var seen_cards = [];
 
@@ -44,6 +45,7 @@ export const BattleLine = {
                   tactics_deck: tactics_deck,
                   player_hands: player_hands,
                   board_cards: board_cards,
+                  discards: discards,
                   unseen_cards: unseen_cards,
                   seen_cards: seen_cards,
                   flag_statuses: flag_statuses,
@@ -53,11 +55,12 @@ export const BattleLine = {
   minPlayers: 2,
   maxPlayers: 2,
   moves: {
-    playCard: (G, ctx, card, flag) => {
+    playCard: (G, ctx, card, flag, displaced_card = null) => {
       if (ctx.numMoves > 0){
         return INVALID_MOVE;
       }
-      if (isTroopCard(G.player_hands[ctx.currentPlayer][card]) || isMoraleTacticsCard(G.player_hands[ctx.currentPlayer][card])){
+      let card_str = G.player_hands[ctx.currentPlayer][card];
+      if (flag !== -1 && (isTroopCard(card_str) || isMoraleTacticsCard(card_str) || isDisplacementCard(card_str))){
         if (flagHasMud(G.board_cards[flag])){
           if (countFormationCards(G.board_cards[flag][ctx.currentPlayer]) === 4){
             return INVALID_MOVE;
@@ -69,11 +72,10 @@ export const BattleLine = {
           }
         }
       }
-      
-      if (G.flag_statuses[flag] !== null){
+      if (flag !== -1 && G.flag_statuses[flag] !== null){
         return INVALID_MOVE;
       }
-      if (isTacticsCard(G.player_hands[ctx.currentPlayer][card])){
+      if (isTacticsCard(card_str)){
         if (ctx.currentPlayer === '0' && G.tactics_played[0] > G.tactics_played[1]){
           return INVALID_MOVE;
         }
@@ -81,21 +83,62 @@ export const BattleLine = {
           return INVALID_MOVE;
         }
       }
-      if (isLeaderTacticsCard(G.player_hands[ctx.currentPlayer][card]) && G.leaders_played[ctx.currentPlayer] > 0){
+      if (isLeaderTacticsCard(card_str) && G.leaders_played[ctx.currentPlayer] > 0){
         return INVALID_MOVE;
       }
-      if (["TRA","DES","RDP","SCT"].indexOf(G.player_hands[ctx.currentPlayer][card]) >= 0){
+      if (isDisplacementCard(card_str)){
+        if (displaced_card === null){
+          return INVALID_MOVE;
+        }
+        if (G.flag_statuses[displaced_card[0]] !== null){
+          return INVALID_MOVE;
+        }
+        let displaced_card_str = G.board_cards[displaced_card[0]][displaced_card[1]][displaced_card[2]];
+        if (card_str === "TRA"){
+          if (displaced_card[1] === ctx.currentPlayer || isTacticsCard(displaced_card_str) || flag === -1){
+            return INVALID_MOVE;
+          }
+        }
+        else if (card_str === "DES"){
+          if (displaced_card[1] === ctx.currentPlayer || !isFormationCard(displaced_card_str) || flag !== -1){
+            return INVALID_MOVE;
+          }
+        }
+        else if(card_str === "RDP"){
+          if (displaced_card[1] !== ctx.currentPlayer || !isFormationCard(displaced_card_str) || flag === displaced_card[0]){
+            return INVALID_MOVE;
+          }
+        }
+      }
+      else if (flag === -1){
         return INVALID_MOVE;
       }
-      G.board_cards[flag][ctx.currentPlayer].push(G.player_hands[ctx.currentPlayer][card]);
-      G.seen_cards.push(G.player_hands[ctx.currentPlayer][card]);
-      if (isTacticsCard(G.player_hands[ctx.currentPlayer][card])){
+      if (["SCT"].indexOf(card_str) >= 0){
+        return INVALID_MOVE;
+      }
+
+      if (isDisplacementCard(card_str)){
+        let displaced_card_str = G.board_cards[displaced_card[0]][displaced_card[1]][displaced_card[2]];
+        G.board_cards[displaced_card[0]][displaced_card[1]].splice(displaced_card[2], 1);
+        if (flag !== -1){
+          G.board_cards[flag][ctx.currentPlayer].push(displaced_card_str);
+        }
+        else{
+          G.discards[displaced_card[1]].push(displaced_card_str);
+        }
+        G.discards[ctx.currentPlayer].push(card_str);
+      }
+      else{
+        G.board_cards[flag][ctx.currentPlayer].push(card_str); 
+      }
+      G.seen_cards.push(card_str);
+      if (isTacticsCard(card_str)){
         G.tactics_played[ctx.currentPlayer]++;
       }
-      if (isLeaderTacticsCard(G.player_hands[ctx.currentPlayer][card])){
+      if (isLeaderTacticsCard(card_str)){
         G.leaders_played[ctx.currentPlayer]++;
       }
-      var ind = G.unseen_cards.indexOf(G.player_hands[ctx.currentPlayer][card]);
+      var ind = G.unseen_cards.indexOf(card_str);
       if (ind !== -1){
         G.unseen_cards.splice(ind,1);
       }
@@ -327,7 +370,7 @@ function setIntersection(set1, set2){
 function sumValue(formation){
   var sum = 0;
   for (let i = 0; i !== formation.length; i++){
-    if (formation[i].length == 2){
+    if (formation[i].length === 2){
       sum += VALUE_MAP.get(formation[i][0]);
     }
     else{
@@ -383,7 +426,7 @@ function potentialStraightFlush(formation, unseen_cards, has_mud, ind = null){
     var unseen_cards_new = unseen_cards.slice();
     formation_new.push(unseen_cards[i]);
     unseen_cards_new.splice(i, 1);
-    var pot = potentialStraightFlush(formation_new, unseen_cards_new, i);
+    var pot = potentialStraightFlush(formation_new, unseen_cards_new, has_mud, i);
     if (pot !== -1){
       return pot;
     }
@@ -521,6 +564,7 @@ function stripSecrets(G, playerID){
                     tactics_deck: tactics_deck_stripped,
                     player_hands: player_hands_stripped,
                     board_cards: G.board_cards,
+                    discards: G.discards,
                     unseen_cards: G.unseen_cards,
                     seen_cards: G.seen_cards,
                     flag_statuses: G.flag_statuses,
@@ -547,19 +591,38 @@ function canPlayTroopCard(board_cards, player_id, flag_statuses, hand){
   return false;
 }
 
-function canPassTurn(G, ctx){
+export function canPassTurn(G, ctx){
   if (ctx.numMoves === 0){
     return !canPlayTroopCard(G.board_cards, ctx.currentPlayer, G.flag_statuses, G.player_hands[ctx.currentPlayer]); 
   }
   else{
-    return G.troop_deck.length === 0 && G.tactics_deck.length;
+    return G.troop_deck.length === 0 && G.tactics_deck.length === 0;
   }
 }
+
+export function canDisplaceCard(G, ctx, card_str, displaced_card_str, player_id, flag_id){
+  if (!isFormationCard(displaced_card_str)){
+    return false;
+  }
+  if (G.flag_statuses[flag_id] !== null){
+    return false;
+  }
+  if (card_str === "TRA" && (player_id === ctx.currentPlayer || isTacticsCard(displaced_card_str))){
+    return false;
+  }
+  if (card_str === "DES" && player_id === ctx.currentPlayer){
+    return false;
+  }
+  if (card_str === "RDP" && player_id !== ctx.currentPlayer){
+    return false;
+  }
+  return true;
+} 
 
 function isTroopCard(card){
   return card.length === 2;
 }
-function isTacticsCard(card){
+export function isTacticsCard(card){
   return card.length === 3;
 }
 
@@ -571,8 +634,12 @@ function isLeaderTacticsCard(card){
   return ["ALX","DAR"].indexOf(card) >= 0;
 }
 
-function isEnvironmentalTacticsCard(card){
-  return ["FOG","MUD"].indexOf(card) >= 0;
+export function isDisplacementCard(card){
+  return ["TRA","DES","RDP"].indexOf(card) >= 0;
+}
+
+export function isScoutCard(card){
+  return ["SCT"].indexOf(card) >= 0;
 }
 
 function isFormationCard(card){
@@ -581,7 +648,7 @@ function isFormationCard(card){
 
 function countFormationCards(formation){
   let count = 0;
-  for (let i = 0; i != formation.length; i++){
+  for (let i = 0; i !== formation.length; i++){
     if (isFormationCard(formation[i])){
       count++;
     }
@@ -590,8 +657,8 @@ function countFormationCards(formation){
 }
 
 function flagHasFog(formations){
-  for (let i = 0; i != 2; i++){
-    for (let j = 0; j != formations[i].length; j++){
+  for (let i = 0; i !== 2; i++){
+    for (let j = 0; j !== formations[i].length; j++){
       if (formations[i][j] === "FOG"){
         return true;
       }
@@ -601,8 +668,8 @@ function flagHasFog(formations){
 }
 
 function flagHasMud(formations){
-  for (let i = 0; i != 2; i++){
-    for (let j = 0; j != formations[i].length; j++){
+  for (let i = 0; i !== 2; i++){
+    for (let j = 0; j !== formations[i].length; j++){
       if (formations[i][j] === "MUD"){
         return true;
       }
@@ -610,5 +677,3 @@ function flagHasMud(formations){
   }
   return false;
 }
-
-export default canPassTurn;
