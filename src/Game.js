@@ -58,15 +58,9 @@ export const BattleLine = {
       }
       let card_str = G.player_hands[ctx.currentPlayer][card];
       if (flag !== -1 && (isTroopCard(card_str) || isMoraleTacticsCard(card_str) || isDisplacementCard(card_str))){
-        if (flagHasMud(G.board_cards[flag])){
-          if (countFormationCards(G.board_cards[flag][ctx.currentPlayer]) === 4){
-            return INVALID_MOVE;
-          }
-        }
-        else{
-          if (countFormationCards(G.board_cards[flag][ctx.currentPlayer]) === 3){
-            return INVALID_MOVE;
-          }
+        let required_cards = flagHasMud(G.board_cards[flag]) ? 4:3;
+        if (countFormationCards(G.board_cards[flag][ctx.currentPlayer]) === required_cards){
+          return INVALID_MOVE;
         }
       }
       if (flag !== -1 && G.flag_statuses[flag] !== null){
@@ -581,7 +575,8 @@ function canPlayTroopCard(board_cards, player_id, flag_statuses, hand){
     return false;
   }
   for (let i = 0; i !== 9; i++){
-    if (board_cards[i][player_id].length !== 3 && flag_statuses[i] === null){
+    let required_cards = flagHasMud(board_cards[i]) ? 4:3;
+    if (countFormationCards(board_cards[i][player_id]) !== required_cards && flag_statuses[i] === null){
       return true;
     }
   }
