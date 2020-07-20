@@ -442,7 +442,7 @@ function potentialSet(formation, unseen_cards, has_mud, ind = null){
     var unseen_cards_new = unseen_cards.slice();
     formation_new.push(unseen_cards[i]);
     unseen_cards_new.splice(i, 1);
-    var pot = potentialSet(formation_new, unseen_cards_new, i);
+    var pot = potentialSet(formation_new, unseen_cards_new, has_mud, i);
     if (pot !== -1){
       return pot;
     }
@@ -466,7 +466,7 @@ function potentialFlush(formation, unseen_cards, has_mud, ind = null){
     var unseen_cards_new = unseen_cards.slice();
     formation_new.push(unseen_cards[i]);
     unseen_cards_new.splice(i, 1);
-    var pot = potentialFlush(formation_new, unseen_cards_new, i);
+    var pot = potentialFlush(formation_new, unseen_cards_new, has_mud, i);
     if (pot !== -1){
       return pot;
     }
@@ -490,7 +490,7 @@ function potentialStraight(formation, unseen_cards, has_mud, ind = null){
     var unseen_cards_new = unseen_cards.slice();
     formation_new.push(unseen_cards[i]);
     unseen_cards_new.splice(i, 1);
-    var pot = potentialStraight(formation_new, unseen_cards_new, i);
+    var pot = potentialStraight(formation_new, unseen_cards_new, has_mud, i);
     if (pot !== -1){
       return pot;
     }
@@ -511,7 +511,7 @@ function potentialSum(formation, unseen_cards, has_mud, ind = null){
     var unseen_cards_new = unseen_cards.slice();
     formation_new.push(unseen_cards[i]);
     unseen_cards_new.splice(i, 1);
-    var pot = potentialSum(formation_new, unseen_cards_new, i);
+    var pot = potentialSum(formation_new, unseen_cards_new, has_mud, i);
     if (pot !== -1){
       return pot;
     }
