@@ -101,10 +101,12 @@ export const BattleLine = {
           }
         }
       }
-      else if (flag === -1){
-        return INVALID_MOVE;
+      else if (isScoutCard(card_str)){
+        if (flag !== -1){
+          return INVALID_MOVE;
+        }
       }
-      if (["SCT"].indexOf(card_str) >= 0){
+      else if (flag === -1){
         return INVALID_MOVE;
       }
 
@@ -117,6 +119,9 @@ export const BattleLine = {
         else{
           G.discards[displaced_card[1]].push(displaced_card_str);
         }
+        G.discards[ctx.currentPlayer].push(card_str);
+      }
+      else if (isScoutCard(card_str)){
         G.discards[ctx.currentPlayer].push(card_str);
       }
       else{

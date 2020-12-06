@@ -72,7 +72,12 @@ export class BattleLineBoard extends React.Component {
       this.forceUpdate();
     }
     else if (isScoutCard(card_str)){
-
+      if (flag_id === -1){
+        this.props.moves.playCard(this.selected_card, flag_id);
+      }
+      else{
+        return;
+      }
     }
     else{
       if (this.props.ctx.currentPlayer !== player_id){

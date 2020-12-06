@@ -8,9 +8,9 @@ dotenv.config();
 
 const server = Server({ games: [BattleLine] });
 // ONLINE:
-const PORT = process.env.PORT || 8000;
+// const PORT = process.env.PORT || 8000;
 // LOCAL:
-// const PORT = 8000;
+const PORT = 8000;
 // END
 
 server.run(PORT);
