@@ -7,17 +7,17 @@ export class BattleLineLobby extends Lobby{
             playerName: event.target.value,
         });
     }
-    handleNewRoom(event){
-        this._createRoom('battle-line', 2);
+    handleNewMatch(event){
+        this._createMatch('battle-line', 2);
     }
-    handleRefreshRooms(event){
+    handleRefreshMatches(event){
         this._updateConnection();
     }
-    handleJoinRoom(event, gameID, playerID){
-        this._joinRoom('battle-line', gameID, playerID);
+    handleJoinMatch(event, gameID, playerID){
+        this._joinMatch('battle-line', gameID, playerID);
     }
-    handleLeaveRoom(event, gameID){
-        this._leaveRoom('battle-line', gameID);
+    handleLeaveMatch(event, gameID){
+        this._leaveMatch('battle-line', gameID);
     }
     handleEnterLobby(event){
         this._enterLobby(this.state.playerName);
@@ -28,14 +28,14 @@ export class BattleLineLobby extends Lobby{
     handleStartGame(event, gameID, playerID){
         this._startGame('battle-line', {numPlayers: 2, gameID: gameID, playerID: playerID});
     }
-    handleExitRoom(event){
-        this._exitRoom();
+    handleExitMatch(event){
+        this._exitMatch();
     }
     render(){
-        var rooms_thead = [];
-        var rooms_th = [];
+        var matches_thead = [];
+        var matches_th = [];
 
-        const room_id_col_style = {
+        const match_id_col_style = {
             width:"150px",
             textAlign: 'center',
             padding: '3px'
@@ -56,50 +56,50 @@ export class BattleLineLobby extends Lobby{
             padding: '3px'
         }
 
-        rooms_th.push(<th style={room_id_col_style}>{'Room ID'}</th>);
-        rooms_th.push(<th style={player_name_col_style}>{'Player 1'}</th>);
-        rooms_th.push(<th style={vs_col_style}>{'vs.'}</th>);
-        rooms_th.push(<th style={player_name_col_style}>{'Player 2'}</th>);
-        rooms_th.push(<th style={button_col_style}><input type="button" value="New Room" onClick={(event) => this.handleNewRoom(event)}/></th>);
-        rooms_th.push(<th style={button_col_style}><input type="button" value="Refresh" onClick={(event) => this.handleRefreshRooms(event)}/></th>);
-        rooms_thead.push(<tr>{rooms_th}</tr>);
+        matches_th.push(<th style={match_id_col_style}>{'Match ID'}</th>);
+        matches_th.push(<th style={player_name_col_style}>{'Player 1'}</th>);
+        matches_th.push(<th style={vs_col_style}>{'vs.'}</th>);
+        matches_th.push(<th style={player_name_col_style}>{'Player 2'}</th>);
+        matches_th.push(<th style={button_col_style}><input type="button" value="New Match" onClick={(event) => this.handleNewMatch(event)}/></th>);
+        matches_th.push(<th style={button_col_style}><input type="button" value="Refresh" onClick={(event) => this.handleRefreshMatches(event)}/></th>);
+        matches_thead.push(<tr>{matches_th}</tr>);
 
-        var rooms_tbody = [];
-        for (var i = 0; i !== this.connection.rooms.length; i++){
-            var rooms_row = [];
-            let room = this.connection.rooms[i];
-            var player1_name = (room.players.length > 0) ? room.players[0].name:undefined;
-            var player2_name = (room.players.length > 1) ? room.players[1].name:undefined;
+        var matches_tbody = [];
+        for (var i = 0; i !== this.connection.matches.length; i++){
+            var matches_row = [];
+            let match = this.connection.matches[i];
+            var player1_name = (match.players.length > 0) ? match.players[0].name:undefined;
+            var player2_name = (match.players.length > 1) ? match.players[1].name:undefined;
 
-            rooms_row.push(<td style={room_id_col_style}>{room.gameID}</td>);
+            matches_row.push(<td style={match_id_col_style}>{match.gameID}</td>);
             if (player1_name !== undefined){
-                rooms_row.push(<td style={player_name_col_style}>{player1_name}</td>);
+                matches_row.push(<td style={player_name_col_style}>{player1_name}</td>);
             }
             else{
-                rooms_row.push(<td style={player_name_col_style}><input type="button" value="Join" onClick={(event) => this.handleJoinRoom(event, room.gameID, 0)}/></td>);
+                matches_row.push(<td style={player_name_col_style}><input type="button" value="Join" onClick={(event) => this.handleJoinMatch(event, match.gameID, 0)}/></td>);
             }
-            rooms_row.push(<td style={vs_col_style}>{'vs.'}</td>);
+            matches_row.push(<td style={vs_col_style}>{'vs.'}</td>);
             if (player2_name !== undefined){
-                rooms_row.push(<td style={player_name_col_style}>{player2_name}</td>);
+                matches_row.push(<td style={player_name_col_style}>{player2_name}</td>);
             }
             else{
-                rooms_row.push(<td style={player_name_col_style}><input type="button" value="Join" onClick={(event) => this.handleJoinRoom(event, room.gameID, 1)}/></td>);
+                matches_row.push(<td style={player_name_col_style}><input type="button" value="Join" onClick={(event) => this.handleJoinMatch(event, match.gameID, 1)}/></td>);
             }    
 
             if (player1_name === this.state.playerName || player2_name === this.state.playerName){
-                rooms_row.push(<td style={button_col_style}><input type="button" value="Leave" onClick={(event) => this.handleLeaveRoom(event, room.gameID)}/></td>);
+                matches_row.push(<td style={button_col_style}><input type="button" value="Leave" onClick={(event) => this.handleLeaveMatch(event, match.gameID)}/></td>);
             }
             else{
-                rooms_row.push(<td style={button_col_style}></td>);
+                matches_row.push(<td style={button_col_style}></td>);
             }
             if((player1_name === this.state.playerName && player2_name !== undefined) || (player2_name === this.state.playerName && player1_name !== undefined)){
                 let playerID = this.state.playerName === player1_name ? '0':'1';
-                rooms_row.push(<td style={button_col_style}><input type="button" value="Play" onClick={(event) => this.handleStartGame(event, room.gameID, playerID)}/></td>);
+                matches_row.push(<td style={button_col_style}><input type="button" value="Play" onClick={(event) => this.handleStartGame(event, match.gameID, playerID)}/></td>);
             }
             else{
-                rooms_row.push(<td style={button_col_style}></td>);
+                matches_row.push(<td style={button_col_style}></td>);
             }
-            rooms_tbody.push(<tr>{rooms_row}</tr>);
+            matches_tbody.push(<tr>{matches_row}</tr>);
         }
 
         // var errMsg = this.state.errorMsg !== '' ? 'Error: ' + this.state.errorMsg:'';
@@ -118,12 +118,12 @@ export class BattleLineLobby extends Lobby{
                 <div>
                     <input type="button" value="Exit Lobby" onClick={(event) => this.handleExitLobby(event)}/>
                     <br></br>
-                    <table id="rooms">
+                    <table id="matches">
                         <thead>
-                            {rooms_thead}
+                            {matches_thead}
                         </thead>
                         <tbody>
-                            {rooms_tbody}
+                            {matches_tbody}
                         </tbody>
                     </table>
                 </div>
