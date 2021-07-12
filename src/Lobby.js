@@ -20,6 +20,7 @@ export class BattleLineLobby extends Lobby{
         console.log(matchID);
         console.log(playerID);
         this._joinMatch('battle-line', matchID, playerID);
+        console.log(this.state);
     }
     handleLeaveMatch(event, matchID){
         console.log("Leave match");
