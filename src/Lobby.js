@@ -15,15 +15,15 @@ export class BattleLineLobby extends Lobby{
         console.log("Refresh matches");
         this._updateConnection();
     }
-    handleJoinMatch(event, gameID, playerID){
+    handleJoinMatch(event, matchID, playerID){
         console.log("Join match");
-        console.log(gameID);
+        console.log(matchID);
         console.log(playerID);
-        this._joinMatch('battle-line', gameID, playerID);
+        this._joinMatch('battle-line', matchID, playerID);
     }
-    handleLeaveMatch(event, gameID){
+    handleLeaveMatch(event, matchID){
         console.log("Leave match");
-        this._leaveMatch('battle-line', gameID);
+        this._leaveMatch('battle-line', matchID);
     }
     handleEnterLobby(event){
         console.log("Enter lobby");
@@ -33,9 +33,9 @@ export class BattleLineLobby extends Lobby{
         console.log("Exit lobby");
         this._exitLobby();
     }
-    handleStartGame(event, gameID, playerID){
-        console.log("Start game");
-        this._startGame('battle-line', {numPlayers: 2, gameID: gameID, playerID: playerID});
+    handleStartMatch(event, matchID, playerID){
+        console.log("Start match");
+        this._startMatch('battle-line', {numPlayers: 2, matchID: matchID, playerID: playerID});
     }
     handleExitMatch(event){
         console.log("Exit match")
@@ -85,30 +85,30 @@ export class BattleLineLobby extends Lobby{
             console.log(player1_name);
             console.log(player2_name);
 
-            matches_row.push(<td style={match_id_col_style}>{match.gameID}</td>);
+            matches_row.push(<td style={match_id_col_style}>{match.matchID}</td>);
             if (player1_name !== undefined){
                 matches_row.push(<td style={player_name_col_style}>{player1_name}</td>);
             }
             else{
-                matches_row.push(<td style={player_name_col_style}><input type="button" value="Join" onClick={(event) => this.handleJoinMatch(event, match.gameID, 0)}/></td>);
+                matches_row.push(<td style={player_name_col_style}><input type="button" value="Join" onClick={(event) => this.handleJoinMatch(event, match.matchID, 0)}/></td>);
             }
             matches_row.push(<td style={vs_col_style}>{'vs.'}</td>);
             if (player2_name !== undefined){
                 matches_row.push(<td style={player_name_col_style}>{player2_name}</td>);
             }
             else{
-                matches_row.push(<td style={player_name_col_style}><input type="button" value="Join" onClick={(event) => this.handleJoinMatch(event, match.gameID, 1)}/></td>);
+                matches_row.push(<td style={player_name_col_style}><input type="button" value="Join" onClick={(event) => this.handleJoinMatch(event, match.matchID, 1)}/></td>);
             }    
 
             if (player1_name === this.state.playerName || player2_name === this.state.playerName){
-                matches_row.push(<td style={button_col_style}><input type="button" value="Leave" onClick={(event) => this.handleLeaveMatch(event, match.gameID)}/></td>);
+                matches_row.push(<td style={button_col_style}><input type="button" value="Leave" onClick={(event) => this.handleLeaveMatch(event, match.matchID)}/></td>);
             }
             else{
                 matches_row.push(<td style={button_col_style}></td>);
             }
             if((player1_name === this.state.playerName && player2_name !== undefined) || (player2_name === this.state.playerName && player1_name !== undefined)){
                 let playerID = this.state.playerName === player1_name ? '0':'1';
-                matches_row.push(<td style={button_col_style}><input type="button" value="Play" onClick={(event) => this.handleStartGame(event, match.gameID, playerID)}/></td>);
+                matches_row.push(<td style={button_col_style}><input type="button" value="Play" onClick={(event) => this.handleStartMatch(event, match.matchID, playerID)}/></td>);
             }
             else{
                 matches_row.push(<td style={button_col_style}></td>);
@@ -144,10 +144,10 @@ export class BattleLineLobby extends Lobby{
             );
         }
         else if (this.state.phase === 'play'){
-            var board_element = React.createElement(this.state.runningGame.app, {
-                gameID: this.state.runningGame.gameID,
-                playerID: this.state.runningGame.playerID,
-                credentials: this.state.runningGame.credentials
+            var board_element = React.createElement(this.state.runningMatch.app, {
+                matchID: this.state.runningMatch.matchID,
+                playerID: this.state.runningMatch.playerID,
+                credentials: this.state.runningMatch.credentials
             });
             return (
                 <div>
