@@ -217,7 +217,6 @@ function drawTacticsCardFront(ctx, card_str, highlight){
         ctx.translate(-card_width, -card_height);
     }
     if (format.length === 3){
-        console.log(format[2]);
         format[2]();
     }
 }

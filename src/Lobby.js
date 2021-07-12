@@ -8,38 +8,27 @@ export class BattleLineLobby extends Lobby{
         });
     }
     handleNewMatch(event){
-        console.log("New match");
         this._createMatch('battle-line', 2);
     }
     handleRefreshMatches(event){
-        console.log("Refresh matches");
         this._updateConnection();
     }
     handleJoinMatch(event, matchID, playerID){
-        console.log("Join match");
-        console.log(matchID);
-        console.log(playerID);
         this._joinMatch('battle-line', matchID, playerID);
-        console.log(this.state);
     }
     handleLeaveMatch(event, matchID){
-        console.log("Leave match");
         this._leaveMatch('battle-line', matchID);
     }
     handleEnterLobby(event){
-        console.log("Enter lobby");
         this._enterLobby(this.state.playerName);
     }
     handleExitLobby(event){
-        console.log("Exit lobby");
         this._exitLobby();
     }
     handleStartMatch(event, matchID, playerID){
-        console.log("Start match");
         this._startMatch('battle-line', {numPlayers: 2, matchID: matchID, playerID: playerID});
     }
     handleExitMatch(event){
-        console.log("Exit match")
         this._exitMatch();
     }
     render(){
@@ -76,15 +65,11 @@ export class BattleLineLobby extends Lobby{
         matches_thead.push(<tr>{matches_th}</tr>);
 
         var matches_tbody = [];
-        console.log("Loop through matches");
         for (var i = 0; i !== this.connection.matches.length; i++){
             var matches_row = [];
             let match = this.connection.matches[i];
-            console.log(match);
             var player1_name = (match.players.length > 0) ? match.players[0].name:undefined;
             var player2_name = (match.players.length > 1) ? match.players[1].name:undefined;
-            console.log(player1_name);
-            console.log(player2_name);
 
             matches_row.push(<td style={match_id_col_style}>{match.matchID}</td>);
             if (player1_name !== undefined){
