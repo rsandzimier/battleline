@@ -75,11 +75,15 @@ export class BattleLineLobby extends Lobby{
         matches_thead.push(<tr>{matches_th}</tr>);
 
         var matches_tbody = [];
+        console.log("Loop through matches");
         for (var i = 0; i !== this.connection.matches.length; i++){
             var matches_row = [];
             let match = this.connection.matches[i];
+            console.log(match);
             var player1_name = (match.players.length > 0) ? match.players[0].name:undefined;
             var player2_name = (match.players.length > 1) ? match.players[1].name:undefined;
+            console.log(player1_name);
+            console.log(player2_name);
 
             matches_row.push(<td style={match_id_col_style}>{match.gameID}</td>);
             if (player1_name !== undefined){
