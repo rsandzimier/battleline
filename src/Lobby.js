@@ -91,14 +91,14 @@ export class BattleLineLobby extends Lobby{
                 matches_row.push(<td style={player_name_col_style}>{player1_name}</td>);
             }
             else{
-                matches_row.push(<td style={player_name_col_style}><input type="button" value="Join" onClick={(event) => this.handleJoinMatch(event, match.matchID, 0)}/></td>);
+                matches_row.push(<td style={player_name_col_style}><input type="button" value="Join" onClick={(event) => this.handleJoinMatch(event, match.matchID, "0")}/></td>);
             }
             matches_row.push(<td style={vs_col_style}>{'vs.'}</td>);
             if (player2_name !== undefined){
                 matches_row.push(<td style={player_name_col_style}>{player2_name}</td>);
             }
             else{
-                matches_row.push(<td style={player_name_col_style}><input type="button" value="Join" onClick={(event) => this.handleJoinMatch(event, match.matchID, 1)}/></td>);
+                matches_row.push(<td style={player_name_col_style}><input type="button" value="Join" onClick={(event) => this.handleJoinMatch(event, match.matchID, "1")}/></td>);
             }    
 
             if (player1_name === this.state.playerName || player2_name === this.state.playerName){
