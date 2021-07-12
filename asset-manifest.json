@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/battleline/static/css/main.5ecd60fb.chunk.css",
-    "main.js": "/battleline/static/js/main.102c918b.chunk.js",
-    "main.js.map": "/battleline/static/js/main.102c918b.chunk.js.map",
+    "main.js": "/battleline/static/js/main.44bea7a5.chunk.js",
+    "main.js.map": "/battleline/static/js/main.44bea7a5.chunk.js.map",
     "runtime-main.js": "/battleline/static/js/runtime-main.0a2e9051.js",
     "runtime-main.js.map": "/battleline/static/js/runtime-main.0a2e9051.js.map",
     "static/js/2.87407715.chunk.js": "/battleline/static/js/2.87407715.chunk.js",
     "static/js/2.87407715.chunk.js.map": "/battleline/static/js/2.87407715.chunk.js.map",
     "index.html": "/battleline/index.html",
-    "precache-manifest.07e94cb62a95ea8eded2096461b0ddc0.js": "/battleline/precache-manifest.07e94cb62a95ea8eded2096461b0ddc0.js",
+    "precache-manifest.199fb09f658383d9e552e5566dac8c30.js": "/battleline/precache-manifest.199fb09f658383d9e552e5566dac8c30.js",
     "service-worker.js": "/battleline/service-worker.js",
     "static/css/main.5ecd60fb.chunk.css.map": "/battleline/static/css/main.5ecd60fb.chunk.css.map",
     "static/js/2.87407715.chunk.js.LICENSE.txt": "/battleline/static/js/2.87407715.chunk.js.LICENSE.txt"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.0a2e9051.js",
     "static/js/2.87407715.chunk.js",
     "static/css/main.5ecd60fb.chunk.css",
-    "static/js/main.102c918b.chunk.js"
+    "static/js/main.44bea7a5.chunk.js"
   ]
 }
