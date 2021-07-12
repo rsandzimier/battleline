@@ -1,6 +1,6 @@
 import React from 'react';
 import {Card, Formation, Flag} from './BoardComponents'
-import {canPassTurn, isDisplacementCard, isScoutCard, canDisplaceCard} from './Game'
+import {canPassTurn, isDisplacementCard, isScoutCard, canDisplaceCard, isTroopCard, isTacticsCard} from './Game'
 
 export class BattleLineBoard extends React.Component {
   constructor(props) {
@@ -74,6 +74,9 @@ export class BattleLineBoard extends React.Component {
     else if (isScoutCard(card_str)){
       if (flag_id === -1){
         this.props.moves.playCard(this.selected_card, flag_id);
+        this.selected_card = null;
+        this.displaced_card = null;
+        this.forceUpdate();
       }
       else{
         return;
@@ -93,10 +96,25 @@ export class BattleLineBoard extends React.Component {
     }
   }
   onClickFlag(flag_id){
-    this.props.moves.claimFlag(flag_id); 
+    this.props.moves.claimFlag(flag_id);
   }
   onClickDeck(deck_name){
-    this.props.moves.drawCard(deck_name); 
+    if (this.selected_card !== null){
+      let card_str = this.props.G.player_hands[this.props.ctx.currentPlayer][this.selected_card];
+      if (isScoutCard(card_str)){
+        this.props.moves.playCard(this.selected_card, -1);
+        this.selected_card = null;
+        this.displaced_card = null;
+        this.forceUpdate();
+      }
+      else if ((isTroopCard(card_str) && deck_name == "troop") || (isTacticsCard(card_str) && deck_name == "tactics")){
+        this.props.moves.playCard(this.selected_card, -1);
+        this.selected_card = null;
+        this.displaced_card = null;
+        this.forceUpdate();
+      }
+    }
+    this.props.moves.drawCard(deck_name);
   }
   onClickPass(){
     this.props.moves.passTurn();
@@ -106,6 +124,7 @@ export class BattleLineBoard extends React.Component {
 
     let cells = [];
     let text_display = '';
+
     if (this.props.ctx.gameover !== undefined && this.props.ctx.gameover.winner === '0'){
       text_display = 'Winner!'
     }
