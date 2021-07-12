@@ -139,7 +139,7 @@ export class BattleLineBoard extends React.Component {
     for (let i = 0; i < this.props.G.player_hands[0].length; i++) {
       cells.push(
         <td key={cells.length} onClick={() => this.onClickCard('0', i)}>
-          <Card str={this.props.G.player_hands[0][i]} side={'top'} selected={i===this.selected_card && this.props.ctx.currentPlayer==='0' && this.props.playerID==='0' && this.props.ctx.numMoves===0}/>
+          <Card str={this.props.G.player_hands[0][i]} side={'top'} selected={i===this.selected_card && this.props.ctx.currentPlayer==='0' && this.props.playerID==='0' && (this.props.ctx.numMoves===0 || (this.props.G.scout_state[1] > 0 && this.props.G.scout_state[0] === 0))}/>
         </td>
       );
     }
@@ -275,7 +275,7 @@ export class BattleLineBoard extends React.Component {
     for (let i = 0; i < this.props.G.player_hands[1].length; i++) {
       cells.push(
         <td key={cells.length} onClick={() => this.onClickCard('1',i)}>
-          <Card str={this.props.G.player_hands[1][i]} side={'bottom'} selected={i===this.selected_card && this.props.ctx.currentPlayer==='1' && this.props.playerID==='1' && this.props.ctx.numMoves===0}/>
+          <Card str={this.props.G.player_hands[1][i]} side={'bottom'} selected={i===this.selected_card && this.props.ctx.currentPlayer==='1' && this.props.playerID==='1' && (this.props.ctx.numMoves===0 || (this.props.G.scout_state[1] > 0 && this.props.G.scout_state[0] === 0))}/>
         </td>
       );
     }

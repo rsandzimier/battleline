@@ -57,7 +57,7 @@ export const BattleLine = {
   moves: {
     playCard: (G, ctx, card, flag, displaced_card = null) => {
       let card_str = G.player_hands[ctx.currentPlayer][card];
-      if (ctx.numMoves > 0 && G.scout_state[1] > 0){
+      if (ctx.numMoves > 0 && G.scout_state[1] > 0 && G.scout_state[0] === 0){
         if (flag !== -1){
           return INVALID_MOVE;
         }
