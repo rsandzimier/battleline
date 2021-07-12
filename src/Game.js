@@ -27,6 +27,7 @@ export const BattleLine = {
                 let seen_cards = [];
 
                 let flag_statuses = new Array(9).fill(null);
+                let flag_tiebreakers = new Array(9).fill(null);
                 shuffle_array(troop_deck);
                 shuffle_array(tactics_deck);
                 let player_hands = [];
@@ -46,17 +47,40 @@ export const BattleLine = {
                   unseen_cards: unseen_cards,
                   seen_cards: seen_cards,
                   flag_statuses: flag_statuses,
+                  flag_tiebreakers: flag_tiebreakers,
                   tactics_played: [0,0],
-                  leaders_played: [0,0]
+                  leaders_played: [0,0],
+                  scout_state: [0, 0] // to_draw, drawn
                 }},
   minPlayers: 2,
   maxPlayers: 2,
   moves: {
     playCard: (G, ctx, card, flag, displaced_card = null) => {
+      let card_str = G.player_hands[ctx.currentPlayer][card];
+      if (ctx.numMoves > 0 && G.scout_state[1] > 0){
+        if (flag !== -1){
+          return INVALID_MOVE;
+        }
+
+        if (isTroopCard(card_str)){
+          G.troop_deck.push(card_str);
+        }
+        else if (isTacticsCard(card_str)){
+          G.tactics_deck.push(card_str);
+        }
+        G.player_hands[ctx.currentPlayer].splice(card, 1);
+        G.scout_state[1] = G.scout_state[1] - 1;
+        if (G.scout_state[1] <= 1){
+          G.scout_state[0] = 0;
+          G.scout_state[1] = 0;
+          ctx.events.endTurn();
+        }
+        return;
+      }
+
       if (ctx.numMoves > 0){
         return INVALID_MOVE;
       }
-      let card_str = G.player_hands[ctx.currentPlayer][card];
       if (flag !== -1 && (isTroopCard(card_str) || isMoraleTacticsCard(card_str) || isDisplacementCard(card_str))){
         let required_cards = flagHasMud(G.board_cards[flag]) ? 4:3;
         if (countFormationCards(G.board_cards[flag][ctx.currentPlayer]) === required_cards){
@@ -101,10 +125,14 @@ export const BattleLine = {
           }
         }
       }
-      else if (flag === -1){
-        return INVALID_MOVE;
+      else if (isScoutCard(card_str)){
+        if (flag !== -1){
+          return INVALID_MOVE;
+        }
+        let num_draw = Math.min(3, G.troop_deck.length + G.tactics_deck.length);
+        G.scout_state = [num_draw, 0];
       }
-      if (["SCT"].indexOf(card_str) >= 0){
+      else if (flag === -1){
         return INVALID_MOVE;
       }
 
@@ -118,10 +146,40 @@ export const BattleLine = {
           G.discards[displaced_card[1]].push(displaced_card_str);
         }
         G.discards[ctx.currentPlayer].push(card_str);
+        if (G.flag_tiebreakers[displaced_card[0]] === displaced_card[1]){
+          G.flag_tiebreakers[displaced_card[0]] = null;
+        }
+      }
+      else if (isScoutCard(card_str)){
+        G.discards[ctx.currentPlayer].push(card_str);
       }
       else{
-        G.board_cards[flag][ctx.currentPlayer].push(card_str); 
+        G.board_cards[flag][ctx.currentPlayer].push(card_str);
+        if (card_str === "MUD"){
+          G.flag_tiebreakers[flag] = null;
+        }
       }
+
+      if (flag !== -1){
+        let has_mud = flagHasMud(G.board_cards[flag]);
+        var formations = getFormations(flag, ctx.currentPlayer, G.board_cards);
+        let required_cards = has_mud ? 4:3;
+        if (formations[0].length === required_cards && G.flag_tiebreakers[flag] === null){
+          G.flag_tiebreakers[flag] = ctx.currentPlayer;
+        }
+      }
+      if (displaced_card !== null){
+        let has_mud = flagHasMud(G.board_cards[displaced_card[0]]);
+        var formations = getFormations(displaced_card[0], ctx.currentPlayer, G.board_cards);
+        let required_cards = has_mud ? 4:3;
+        if (formations[0].length === required_cards && G.flag_tiebreakers[displaced_card[0]] === null){
+          G.flag_tiebreakers[displaced_card[0]] = ctx.currentPlayer;
+        }
+        else if (formations[1].length === required_cards && G.flag_tiebreakers[displaced_card[0]] === null){
+          G.flag_tiebreakers[displaced_card[0]] = getOpponentID(ctx.currentPlayer);
+        }
+      }
+
       G.seen_cards.push(card_str);
       if (isTacticsCard(card_str)){
         G.tactics_played[ctx.currentPlayer]++;
@@ -143,7 +201,7 @@ export const BattleLine = {
         let has_fog = flagHasFog(G.board_cards[flag]);
         let has_mud = flagHasMud(G.board_cards[flag]);
         var formations = getFormations(flag, ctx.currentPlayer, G.board_cards);
-        if (!isStrongestFormation(formations[0], formations[1], G.unseen_cards, has_fog, has_mud)){
+        if (!isStrongestFormation(formations[0], formations[1], G.unseen_cards, has_fog, has_mud, G.flag_tiebreakers[flag] === ctx.currentPlayer)){
           return INVALID_MOVE;
         }
         G.flag_statuses[flag] = ctx.currentPlayer;
@@ -153,6 +211,9 @@ export const BattleLine = {
     drawCard: {
       move: (G, ctx, deck) => {
         if (ctx.numMoves === 0){
+          return INVALID_MOVE;
+        }
+        if ((G.scout_state[0] != 0 || G.scout_state[1] != 0) && G.scout_state[0] <= G.scout_state[1]){
           return INVALID_MOVE;
         }
         if (deck === 'troop' && G.troop_deck.length === 0){
@@ -169,6 +230,13 @@ export const BattleLine = {
         }
         else{
           return INVALID_MOVE;
+        }
+        if (G.scout_state[0] != 0 || G.scout_state[1] != 0){
+          G.scout_state[1] = G.scout_state[1] + 1;
+          if (G.scout_state[0] === G.scout_state[1]){
+            G.scout_state[0] = 0;
+          }
+          return; // Don't end turn
         }
         ctx.events.endTurn();
       },
@@ -230,24 +298,27 @@ function getFormations(flag, player_id, board_cards){
   return [formation, formation_opp];
 }
 
-function isStrongestFormation(formation, formation_opp, unseen_cards, has_fog, has_mud){
+function isStrongestFormation(formation, formation_opp, unseen_cards, has_fog, has_mud, tiebreaker){
   var formation_strength = formationStrength(formation, has_fog, has_mud);
   var formation_strength_opp = potentialFormationStrength(formation_opp, unseen_cards, has_fog, has_mud);
-  return formationStrengthComparison(formation_strength, formation_strength_opp);
+  return formationStrengthComparison(formation_strength, formation_strength_opp, tiebreaker);
 }
 
-function formationStrengthComparison(formation_strength1, formation_strength2){
+function formationStrengthComparison(formation_strength1, formation_strength2, tiebreaker){
   if (FORMATION_STRENGTH_MAP.get(formation_strength1[0]) > FORMATION_STRENGTH_MAP.get(formation_strength2[0])){
     return true;
   }
   else if (FORMATION_STRENGTH_MAP.get(formation_strength1[0]) < FORMATION_STRENGTH_MAP.get(formation_strength2[0])){
     return false;
   }
-  else if (formation_strength1[1] >= formation_strength2[1]){
+  else if (formation_strength1[1] > formation_strength2[1]){
     return true;
   }
-  else{
+  else if (formation_strength1[1] < formation_strength2[1]){
     return false;
+  }
+  else{
+    return tiebreaker;
   }
 }
 
@@ -559,8 +630,10 @@ function stripSecrets(G, playerID){
                     unseen_cards: G.unseen_cards,
                     seen_cards: G.seen_cards,
                     flag_statuses: G.flag_statuses,
+                    flag_tiebreakers: G.flag_tiebreakers,
                     tactics_played: G.tactics_played,
-                    leaders_played: G.leaders_played};
+                    leaders_played: G.leaders_played,
+                    scout_state: G.scout_state};
   return G_stripped;
 }
 
@@ -611,7 +684,7 @@ export function canDisplaceCard(G, ctx, card_str, displaced_card_str, player_id,
   return true;
 } 
 
-function isTroopCard(card){
+export function isTroopCard(card){
   return card.length === 2;
 }
 export function isTacticsCard(card){
@@ -668,4 +741,10 @@ function flagHasMud(formations){
     }
   }
   return false;
+}
+
+function getOpponentID(player_id){
+  if (player_id === "0")
+    return "1";
+  return "0";
 }
