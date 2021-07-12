@@ -15,7 +15,6 @@
     "react-scripts": "3.4.1"
   },
   "engines": {
-    "npm": "3.x",
     "node": "12.x"
   },
   "scripts": {
