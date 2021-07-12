@@ -18,8 +18,6 @@ object-assign
  * MIT Licensed
  */
 
-/*! https://mths.be/utf8js v2.1.2 by @mathias */
-
 /** @license React v0.19.1
  * scheduler.production.min.js
  *
@@ -29,7 +27,7 @@ object-assign
  * LICENSE file in the root directory of this source tree.
  */
 
-/** @license React v16.13.1
+/** @license React v16.14.0
  * react-dom.production.min.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -38,7 +36,7 @@ object-assign
  * LICENSE file in the root directory of this source tree.
  */
 
-/** @license React v16.13.1
+/** @license React v16.14.0
  * react.production.min.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
