@@ -8,27 +8,37 @@ export class BattleLineLobby extends Lobby{
         });
     }
     handleNewMatch(event){
+        console.log("New match");
         this._createMatch('battle-line', 2);
     }
     handleRefreshMatches(event){
+        console.log("Refresh matches");
         this._updateConnection();
     }
     handleJoinMatch(event, gameID, playerID){
+        console.log("Join match");
+        console.log(gameID);
+        console.log(playerID);
         this._joinMatch('battle-line', gameID, playerID);
     }
     handleLeaveMatch(event, gameID){
+        console.log("Leave match");
         this._leaveMatch('battle-line', gameID);
     }
     handleEnterLobby(event){
+        console.log("Enter lobby");
         this._enterLobby(this.state.playerName);
     }
     handleExitLobby(event){
+        console.log("Exit lobby");
         this._exitLobby();
     }
     handleStartGame(event, gameID, playerID){
+        console.log("Start game");
         this._startGame('battle-line', {numPlayers: 2, gameID: gameID, playerID: playerID});
     }
     handleExitMatch(event){
+        console.log("Exit match")
         this._exitMatch();
     }
     render(){
