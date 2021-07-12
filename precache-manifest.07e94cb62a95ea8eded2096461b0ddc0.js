@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "47aefdc4a9e63c36cf3db2d307d73c4b",
+    "revision": "d84e3168c5c2f49856f59d451072f5f1",
     "url": "/battleline/index.html"
   },
   {
-    "revision": "e06da182696eb9468d6e",
+    "revision": "b5b270475de1b0241e1c",
     "url": "/battleline/static/css/main.5ecd60fb.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/battleline/static/js/2.87407715.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "e06da182696eb9468d6e",
-    "url": "/battleline/static/js/main.2f0349b2.chunk.js"
+    "revision": "b5b270475de1b0241e1c",
+    "url": "/battleline/static/js/main.102c918b.chunk.js"
   },
   {
     "revision": "fa33b2e79b33f9d26a51",
