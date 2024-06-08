@@ -10,7 +10,7 @@ const BattleLineClient = Client({
   game: BattleLine,
   board: BattleLineBoard,
   // ONLINE:
-  multiplayer: SocketIO({ server: 'https://battleline-backend.herokuapp.com' }),
+  multiplayer: SocketIO({ server: 'https://battleline-backend.onrender.com' }),
   // LOCAL:
   // multiplayer: SocketIO({ server: 'localhost:8000' }),
   // END
@@ -21,8 +21,8 @@ const App = () => (
   <div>
     <Header/>
     <BattleLineLobby
-    gameServer={'https://battleline-backend.herokuapp.com'}
-    lobbyServer={'https://battleline-backend.herokuapp.com'}
+    gameServer={'https://battleline-backend.onrender.com'}
+    lobbyServer={'https://battleline-backend.onrender.com'}
     gameComponents={[{game: BattleLine, board: BattleLineBoard}]}
     />
   </div>
