@@ -7,7 +7,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
-    "boardgame.io": "^0.45.0",
+    "boardgame.io": "^0.50.2",
     "esm": "^3.2.25",
     "koa-static": "^5.0.0",
     "react": "^16.14.0",
