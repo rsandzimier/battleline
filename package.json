@@ -12,7 +12,7 @@
     "koa-static": "^5.0.0",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
-    "react-scripts": "3.4.1"
+    "react-scripts": "5.0.1"
   },
   "engines": {
     "node": "12.x"
