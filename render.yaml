@@ -6,7 +6,7 @@ services:
     name: battleline-backend
     env: docker # valid values: https://render.com/docs/yaml-spec#environment
     dockerfilePath: Dockerfile.render
-    plan: starter # optional; defaults to starter
+    plan: free # optional; defaults to starter
     numInstances: 1
     envVars:
 
